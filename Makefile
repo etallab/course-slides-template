@@ -6,7 +6,7 @@ LATEX_COMMAND := latexmk -pdf$(LATEX_ENGINE) $(LATEX_OPTIONS)
 
 # Handout Options
 HANDOUT_WORK_DIR := handouts-work
-HANDOUT_MARGINS := 10
+HANDOUT_MARGINS := "15 20 15 20"
 
 
 # Automatically detect files to build/build from
