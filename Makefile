@@ -5,7 +5,6 @@ LATEX_COMMAND := latexmk -pdf$(LATEX_ENGINE) $(LATEX_OPTIONS)
 
 
 # Handout Options
-HANDOUT_WORK_DIR := handouts-work
 HANDOUT_MARGINS := "15 20 15 20"
 
 
@@ -30,9 +29,6 @@ print-info:
 	@echo - LaTeX Engine: $(LATEX_ENGINE)
 	@echo - LaTeX Options: $(LATEX_OPTIONS)
 	@echo - LaTeX Command: \"$(LATEX_COMMAND)\"
-	@echo
-	@echo Handout Options:
-	@echo - Handout Work Directory: $(HANDOUT_WORK_DIR)
 	@echo - Handout Margins \(bp\): \"$(HANDOUT_MARGINS)\"
 	@echo
 	@echo Target Files:
