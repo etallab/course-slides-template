@@ -1,6 +1,5 @@
 # TeX-ing Options
-AUX_DIRECTORY := aux/
-LATEX_OPTIONS := -interaction=nonstopmode -file-line-error -auxdir=$(AUX_DIRECTORY)
+LATEX_OPTIONS := -interaction=nonstopmode -file-line-error
 LATEX_ENGINE := lua
 LATEX_COMMAND := latexmk -pdf$(LATEX_ENGINE) $(LATEX_OPTIONS)
 
@@ -29,7 +28,6 @@ all: slides handouts speakers-notes notes
 print-info:
 	@echo TeXing Options:
 	@echo - LaTeX Engine: $(LATEX_ENGINE)
-	@echo - Auxilliary Directory: $(AUX_DIRECTORY)
 	@echo - LaTeX Options: $(LATEX_OPTIONS)
 	@echo - LaTeX Command: \"$(LATEX_COMMAND)\"
 	@echo
@@ -70,10 +68,10 @@ all.zip: $(SLIDES_PDFS) $(HANDOUTS_PDFS) $(SPEAKERS_PDFS) $(NOTES_PDFS)
 
 .PHONY: clean
 clean:
-	$(RM) -rf $(AUX_DIRECTORY)
 	$(RM) notes.zip all.zip
 	$(RM) -r $(dir $(wildcard **/handout/*))
 	$(RM) -r $(dir $(wildcard **/speakers-notes/*))
+	$(RM) -r $(dir $(wildcard **/aux/*))
 	$(RM) -r $(wildcard **/*.synctex.gz)
 	$(RM) $(SLIDES_PDFS)
 	$(RM) $(HANDOUTS_PDFS)
@@ -87,7 +85,7 @@ clean:
 slides: $(SLIDES_PDFS)
 
 %/slides.pdf: %/slides.tex
-	$(LATEX_COMMAND) -outdir=$(@D) $<
+	$(LATEX_COMMAND) -auxdir=$(@D)/aux -outdir=$(@D) $<
 
 
 # Build Notes
@@ -96,7 +94,7 @@ slides: $(SLIDES_PDFS)
 notes: $(NOTES_PDFS)
 
 %/notes.pdf: %/notes.tex
-	$(LATEX_COMMAND) -outdir=$(@D) $<
+	$(LATEX_COMMAND) -auxdir=$(@D)/aux -outdir=$(@D) $<
 
 
 
@@ -114,7 +112,7 @@ handouts: $(HANDOUTS_PDFS)
 %/handout/handout.pdf: %/slides.tex
 	mkdir -p $(@D)
 	sed -e 's/\\documentclass\[/\\documentclass[handout,notes,/g' -e 's/\\documentclass{/\\documentclass[handout,notes]{/g' $< > $(basename $@).ltx
-	$(LATEX_COMMAND) -outdir=$(@D) $(basename $@).ltx
+	$(LATEX_COMMAND) -auxdir=$(@D)/aux -outdir=$(@D) $(basename $@).ltx
 
 
 # Build Speaker's Notes
@@ -131,5 +129,5 @@ speakers-notes: $(SPEAKERS_PDFS)
 %/speakers-notes/speakers-notes.pdf: %/slides.tex
 	mkdir -p $(@D)
 	sed -e 's/\\documentclass\[/\\documentclass[notes,/g' -e 's/\\documentclass{/\\documentclass[notes]{/g' $< > $(basename $@).ltx
-	$(LATEX_COMMAND) -outdir=$(@D) $(basename $@).ltx
+	$(LATEX_COMMAND) -auxdir=$(@D)/aux -outdir=$(@D) $(basename $@).ltx
 
