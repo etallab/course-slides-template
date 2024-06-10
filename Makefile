@@ -47,9 +47,13 @@ print-info:
 	@echo - zip: Build zip files containing artifacts
 	@echo - clean: Clean all artifacts
 	@echo - slides: Build slide decks
+	@echo - clean-slides: Clean slide-related artifacts (will clean aux directory)
 	@echo - notes: Build written notes
+	@echo - clean-notes: Clean notes-related artifacts (will clean aux directory)
 	@echo - handouts: Build handouts
+	@echo - clean-handouts: Clean handout-related artifacts (will clean aux directory)
 	@echo - speakers-notes: Build speaker\'s notes \(handout-style PDFs without handout mode set\)
+	@echo - clean-speakers-notes: Clean speakers-notes-related artifacts (will clean aux directory)
 
 
 # Build a Zip File
@@ -77,6 +81,32 @@ clean:
 	$(RM) $(HANDOUTS_PDFS)
 	$(RM) $(SPEAKERS_PDFS)
 	$(RM) $(NOTES_PDFS)
+
+.PHONY: clean-slides
+clean-slides:
+	$(RM) $(SLIDES_PDFS)
+	$(RM) -r $(dir $(wildcard **/aux/*))
+	$(RM) -r $(wildcard **/*.synctex.gz)
+
+.PHONY: clean-handouts
+clean-handouts:
+	$(RM) $(HANDOUTS_PDFS)
+	$(RM) -r $(dir $(wildcard **/handout/*))
+	$(RM) -r $(dir $(wildcard **/aux/*))
+	$(RM) -r $(wildcard **/*.synctex.gz)
+
+.PHONY: clean-speakers-notes
+clean-speakers-notes:
+	$(RM) $(SPEAKERS_PDFS)
+	$(RM) -r $(dir $(wildcard **/speakers-notes/*))
+	$(RM) -r $(dir $(wildcard **/aux/*))
+	$(RM) -r $(wildcard **/*.synctex.gz)
+
+.PHONY: clean-notes
+clean-notes:
+	$(RM) $(NOTES_PDFS)
+	$(RM) -r $(dir $(wildcard **/aux/*))
+	$(RM) -r $(wildcard **/*.synctex.gz)
 
 
 # Build Slides
