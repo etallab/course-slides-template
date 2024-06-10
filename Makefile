@@ -11,71 +11,125 @@ HANDOUT_MARGINS := 10
 
 
 # Automatically detect files to build/build from
-TEX_FILES:=$(wildcard ??-*.tex)
-COMPILED_PRESENTATIONS:=$(patsubst %.tex,presentations/%.pdf,$(TEX_FILES))
-COMPILED_HANDOUTS:=$(patsubst %.tex,handouts/%.pdf,$(TEX_FILES))
+SLIDES_FILES:=$(wildcard **/slides.tex)
+SLIDES_PDFS:=$(patsubst %.tex,%.pdf,$(SLIDES_FILES))
+HANDOUTS_PDFS:=$(patsubst %/slides.tex,%/handout.pdf,$(SLIDES_FILES))
+SPEAKERS_PDFS:=$(patsubst %/slides.tex,%/speakers-notes.pdf,$(SLIDES_FILES))
+
+NOTES_FILES:=$(wildcard **/notes.tex)
+NOTES_PDFS:=$(patsubst %.tex,%.pdf,$(NOTES_FILES))
 
 
-# Basic and debugging targets
-.PHONY: all
-all: presentations handouts
+# Top-level targets
 
+.PHONY: all
+all: slides handouts speakers-notes notes
 
 .PHONY: print-info
 print-info:
-	@echo Build Targets:
-	@echo Detected TeX files: $(TEX_FILES)
-	@echo Presentations to be built: $(COMPILED_PRESENTATIONS)
-	@echo Handouts to be built: $(COMPILED_HANDOUTS)
-	@echo
 	@echo TeXing Options:
-	@echo LaTeX Engine: $(LATEX_ENGINE)
-	@echo Auxilliary Directory: $(AUX_DIRECTORY)
-	@echo LaTeX Options: $(LATEX_OPTIONS)
-	@echo LaTeX Command: \"$(LATEX_COMMAND)\"
+	@echo - LaTeX Engine: $(LATEX_ENGINE)
+	@echo - Auxilliary Directory: $(AUX_DIRECTORY)
+	@echo - LaTeX Options: $(LATEX_OPTIONS)
+	@echo - LaTeX Command: \"$(LATEX_COMMAND)\"
 	@echo
 	@echo Handout Options:
-	@echo Handout Work Directory: $(HANDOUT_WORK_DIR)
-	@echo Handout Margins (bp): \"$(HANDOUT_MARGINS)\"
+	@echo - Handout Work Directory: $(HANDOUT_WORK_DIR)
+	@echo - Handout Margins \(bp\): \"$(HANDOUT_MARGINS)\"
+	@echo
+	@echo Target Files:
+	@echo - Slides: $(SLIDES_PDFS)
+	@echo - Handouts: $(HANDOUTS_PDFS)
+	@echo - Speakers Notes: $(SPEAKERS_PDFS)
+	@echo - Notes: $(NOTES_PDFS)
+	@echo
+	@echo Available Targets:
+	@echo - all: Build slides, notes, handouts and speaker\'s notes
+	@echo - print-info: Show this message
+	@echo - zip: Build zip files containing artifacts
+	@echo - clean: Clean all artifacts
+	@echo - slides: Build slide decks
+	@echo - notes: Build written notes
+	@echo - handouts: Build handouts
+	@echo - speakers-notes: Build speaker\'s notes \(handout-style PDFs without handout mode set\)
 
 
-# Build Presentations
+# Build a Zip File
 
-.PHONY: presentations
-presentations: $(COMPILED_PRESENTATIONS)
+.PHONY: zip
+zip: notes.zip all.zip
 
-presentations/%.pdf: %.tex
-	mkdir -p $(AUX_DIRECTORY)
-	mkdir -p presentations/
-	$(LATEX_COMMAND) -outdir=presentations/ $<
+notes.zip: $(HANDOUTS_PDFS) $(NOTES_PDFS)
+	zip -ur $@ $^
+
+all.zip: $(SLIDES_PDFS) $(HANDOUTS_PDFS) $(SPEAKERS_PDFS) $(NOTES_PDFS)
+	zip -ur $@ $^
+
+
+# Clean Up
+
+.PHONY: clean
+clean:
+	$(RM) -rf $(AUX_DIRECTORY)
+	$(RM) notes.zip all.zip
+	$(RM) -r $(dir $(wildcard **/handout/*))
+	$(RM) -r $(dir $(wildcard **/speakers-notes/*))
+	$(RM) -r $(wildcard **/*.synctex.gz)
+	$(RM) $(SLIDES_PDFS)
+	$(RM) $(HANDOUTS_PDFS)
+	$(RM) $(SPEAKERS_PDFS)
+	$(RM) $(NOTES_PDFS)
+
+
+# Build Slides
+
+.PHONY: slides
+slides: $(SLIDES_PDFS)
+
+%/slides.pdf: %/slides.tex
+	$(LATEX_COMMAND) -outdir=$(@D) $<
+
+
+# Build Notes
+
+.PHONY: notes
+notes: $(NOTES_PDFS)
+
+%/notes.pdf: %/notes.tex
+	$(LATEX_COMMAND) -outdir=$(@D) $<
+
 
 
 # Build Handouts
 
 .PHONY: handouts
-handouts: $(COMPILED_HANDOUTS)
+handouts: $(HANDOUTS_PDFS)
 
-$(HANDOUT_WORK_DIR)/%-handout.pdf: %.tex
-	mkdir -p $(AUX_DIRECTORY)
-	mkdir -p $(HANDOUT_WORK_DIR)
-	sed -e 's/\\documentclass\[/\\documentclass[handout,notes,/g' -e 's/\\documentclass{/\\documentclass[handount,notes]{/g' $< > $(HANDOUT_WORK_DIR)/$(basename $<)-handout.tex
-	$(LATEX_COMMAND) -outdir=$(HANDOUT_WORK_DIR)/ $(HANDOUT_WORK_DIR)/$(basename $<)-handout.tex
-
-$(HANDOUT_WORK_DIR)/%-cropped.pdf: $(HANDOUT_WORK_DIR)/%-handout.pdf
-	pdfcrop --margins $(HANDOUT_MARGINS) $< $@
-
-handouts/%.pdf: $(HANDOUT_WORK_DIR)/%-cropped.pdf
-	mkdir -p handouts/
+%/handout.pdf: %/handout/cropped.pdf
 	pdfjam --nup 1x2 $< --letterpaper --landscape --outfile $@
 
-
-# Clean-up
-.PHONY: clean
-clean:
-	$(RM) -rf $(AUX_DIRECTORY)
-	$(RM) -rf $(HANDOUT_WORK_DIR)
+%/handout/cropped.pdf: %/handout/handout.pdf
+	pdfcrop --margins $(HANDOUT_MARGINS) $< $@
 
-.PHONY: clean-all
-clean-all: clean
-	$(RM) -rf presentations/
-	$(RM) -rf handounts/
+%/handout/handout.pdf: %/slides.tex
+	mkdir -p $(@D)
+	sed -e 's/\\documentclass\[/\\documentclass[handout,notes,/g' -e 's/\\documentclass{/\\documentclass[handout,notes]{/g' $< > $(basename $@).ltx
+	$(LATEX_COMMAND) -outdir=$(@D) $(basename $@).ltx
+
+
+# Build Speaker's Notes
+
+.PHONY: speakers-notes
+speakers-notes: $(SPEAKERS_PDFS)
+
+%/speakers-notes.pdf: %/speakers-notes/cropped.pdf
+	pdfjam --nup 1x2 $< --letterpaper --landscape --outfile $@
+
+%/speakers-notes/cropped.pdf: %/speakers-notes/speakers-notes.pdf
+	pdfcrop --margins $(HANDOUT_MARGINS) $< $@
+
+%/speakers-notes/speakers-notes.pdf: %/slides.tex
+	mkdir -p $(@D)
+	sed -e 's/\\documentclass\[/\\documentclass[notes,/g' -e 's/\\documentclass{/\\documentclass[notes]{/g' $< > $(basename $@).ltx
+	$(LATEX_COMMAND) -outdir=$(@D) $(basename $@).ltx
+

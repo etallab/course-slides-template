@@ -1,0 +1,39 @@
+\documentclass[twoside,letterpaper]{kaohandt}
+
+\usepackage[cleanlook,british]{isodate}
+\usepackage[lucida,plextt]{mycommon}
+\usepackage{csquotes}
+\usepackage{booktabs,tabularx}
+\usepackage{caption,subcaption}
+\usepackage{graphicx}
+\usepackage[inline]{enumitem}
+
+\usepackage{course}
+
+\title{}
+\subtitle{\course}
+\author{Samuel W. Flint}
+\date{\term}
+
+\usepackage[style=authoryear]{kaobiblio}
+\DefineBibliographyStrings{english}{%
+  andothers = {\foreign{et~al}\adddot}
+}
+\addbibresource{bibliography.bib}
+
+\pagestyle{scrheadings}
+
+\begin{document}
+
+\maketitle
+\margintoc
+
+
+\printbibliography
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: LaTeX
+%%% TeX-master: t
+%%% End:

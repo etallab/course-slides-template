@@ -7,11 +7,11 @@
 !.dir-locals.el
 !.latexmkrc
 *.pdfpc
+*.zip
 
-/aux/*
-/handouts/*
-/handouts-work/*
-/presentations/*
+*/handout/*
+*/speakers-notes/*
+aux/*
 
 # Emacs Stuff
 *~
