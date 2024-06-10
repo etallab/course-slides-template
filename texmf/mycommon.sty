@@ -1,0 +1,316 @@
+\ProvidesPackage{mycommon}[2023/08/07 Common/Personal Utility
+Commands]
+
+\RequirePackage{filehook}
+\RequirePackage{ifdraft}
+\RequirePackage{etoolbox}
+\RequirePackage{csquotes}
+\RequirePackage{isodate}
+\RequirePackage{xcolor}
+\RequirePackage{letltxmacro}
+\RequirePackage{setspace}
+\RequirePackage{ifmtarg}
+\RequirePackage{iftex}
+\RequirePackage{environ}
+\RequirePackage{xspace}
+
+\newcommand\mycommon@font{\textit}
+\newcommand\foreign[1]{\mycommon@font{#1}}
+
+\DeclareOption{italic}{\renewcommand\mycommon@font{\textit}}
+
+\DeclareOption{roman}{\renewcommand\mycommon@font{\textrm}}
+
+\DeclareOption{sans}{\renewcommand\mycommon@font{\textsf}}
+
+\DeclareOption{bold}{\renewcommand\mycommon@font{\textbf}}
+
+\DeclareOption{caps}{\renewcommand\mycommon@font{\textsc}}
+
+\DeclareOption{slant}{\renewcommand\mycommon@font{\textsl}}
+
+\newif\if@common@coloredits\@common@coloreditsfalse
+\DeclareOption{nocoloredits}{\@common@coloreditsfalse}
+\DeclareOption{coloredits}{\@common@coloreditstrue}
+
+\newif\if@common@draftbg\@common@draftbgtrue
+\DeclareOption{nodraftbg}{\@common@draftbgfalse}
+\DeclareOption{draftbg}{\@common@draftbgtrue}
+
+\newif\if@common@draftkeys\@common@draftkeystrue
+\DeclareOption{nodraftkeys}{\@common@draftkeysfalse}
+\DeclareOption{draftkeys}{\@common@draftkeystrue}
+
+\newif\if@common@draftspread\@common@draftspreadfalse
+\DeclareOption{nodraftspread}{\@common@draftspreadfalse}
+\DeclareOption{draftspread}{\@common@draftspreadtrue}
+
+\newif\if@common@plextt\@common@plexttfalse
+\DeclareOption{plextt}{\@common@plextttrue}
+
+\newif\if@common@lucida\@common@lucidafalse
+\DeclareOption{lucida}{\@common@lucidatrue}
+
+\newif\if@common@orator\@common@oratorfalse
+\DeclareOption{orator}{\@common@oratortrue}
+
+\newif\if@common@etbb\@common@etbbfalse
+\DeclareOption{etbb}{\@common@etbbtrue\@common@plextttrue}
+
+\newif\if@common@editnote\@common@editnotefalse
+\DeclareOption{editnote}{\@common@editnotetrue}
+\DeclareOption{noeditnote}{\@common@editnotefalse}
+\ifdraft{\@common@editnotetrue}{}
+
+\newif\if@common@todo\@common@todofalse
+\DeclareOption{todo}{\@common@todotrue}
+\DeclareOption{notodo}{\@common@todofalse}
+\ifdraft{\@common@todotrue}{}
+
+\newif\if@common@blind\@common@blindtrue
+\DeclareOption{blinded}{\@common@blindtrue}
+\DeclareOption{unblinded}{\@common@blindfalse}
+  
+\DeclareOption{closedroot}{
+  % "closed" square root, from: https://tex.stackexchange.com/a/29837/30557
+  \LetLtxMacro{\oldsqrt}{\sqrt}
+  \renewcommand{\sqrt}[1][\hphantom{3}]{%
+    \def\DHLindex{#1}\mathpalette\DHLhksqrt}
+  \def\DHLhksqrt#1#2{%
+    \setbox0=\hbox{$#1\oldsqrt[\DHLindex]{#2\,}$}\dimen0=\ht0
+    \advance\dimen0-0.2\ht0
+    \setbox2=\hbox{\vrule height\ht0 depth -\dimen0}%
+    {\box0\lower0.4pt\box2}}
+}
+
+\ExecuteOptions{italic,draftkeys,draftbg,nodraftspread,nocoloredits,blinded}
+\ProcessOptions\relax
+
+\if@common@lucida
+  \ifxetex
+    \RequirePackage{fontspec}
+    \setmainfont[%
+    Ligatures=TeX,
+    Numbers=OldStyle
+    ]{LucidaBrightOT}
+    \setsansfont[%
+    Ligatures=TeX,
+    Numbers=OldStyle,
+    RawFeature={+ss01}
+    ]{LucidaSansOT}
+    \RequirePackage{unicode-math}
+    \setmathfont{LucidaBrightMathOT.otf}
+    \setmathfont[version=bold]{LucidaBrightMathOT-Demi.otf}
+  \else
+    \ifluatex
+      \RequirePackage{fontspec}
+      \setmainfont[%
+      Ligatures=TeX,
+      Numbers=OldStyle
+      ]{LucidaBrightOT}
+      \setsansfont[%
+      Ligatures=TeX,
+      Numbers=OldStyle,
+      RawFeature={+ss01}
+      ]{LucidaSansOT}
+      \RequirePackage{unicode-math}
+      \setmathfont{LucidaBrightMathOT.otf}
+      \setmathfont[version=bold]{LucidaBrightMathOT-Demi.otf}
+    \else
+      \RequirePackage[T1]{fontenc}
+      \RequirePackage[expert,vargreek,seriftt,T1]{lucidabr}
+      \RequirePackage{textcomp}
+      \DeclareEncodingSubset{TS1}{hlh}{1}
+    \fi
+  \fi
+\fi
+
+\if@common@orator
+  \RequirePackage{fontspec}
+  \setmainfont{OratorStd}
+\fi
+
+\if@common@etbb
+  \RequirePackage[T1]{fontenc}
+  \RequirePackage[p,osf]{ETbb}
+  \RequirePackage[scaled=.95,type1]{cabin}
+  \RequirePackage[libertine,vvarbb]{newtxmath}
+\fi
+
+\if@common@plextt
+  \ifxetex
+    \RequirePackage[usefilenames,mono=true,sans=false,serif=false,TT={Scale=MatchLowercase,StylisticSet=3}]{plex-otf}
+  \else
+    \ifluatex
+      \RequirePackage[mono=true,sans=false,serif=false,TT={Scale=MatchLowercase,StylisticSet=3}]{plex-otf}
+    \else
+      \RequirePackage[T1]{fontenc}
+      \RequirePackage[text,sb,type1]{plex-mono}
+    \fi
+  \fi
+\fi
+
+\if@common@draftbg
+  \ifdraft{\RequirePackage{background}\backgroundsetup{contents={DRAFT}}}
+\fi
+
+\if@common@draftkeys
+  \ifdraft{\RequirePackage[color]{showkeys}}
+\fi
+
+\if@common@draftspread
+  \ifdraft{\RequirePackage{setspace}\AtBeginDocument{\doublespace}}
+\fi
+
+\definecolor{phthaloblue}{RGB}{0,15,137}
+\definecolor{nonphotoblue}{RGB}{164,221,237}
+\definecolor{delftblue}{RGB}{31,48,94}
+\definecolor{midnightblue}{RGB}{25,25,112}
+\definecolor{oxfordblue}{RGB}{0,33,71}
+\definecolor{royalblue}{RGB}{65,105,225}
+\definecolor{huskerred}{RGB}{208,0,0}
+
+% Colorblind-Friendly Colors (from Seaborn's "colorblind" palette)
+\definecolor{seaborncolorblind1}{RGB}{1,115,178}
+\definecolor{seaborncolorblind2}{RGB}{222,143,5}
+\definecolor{seaborncolorblind3}{RGB}{2,158,115}
+\definecolor{seaborncolorblind4}{RGB}{213,94,0}
+\definecolor{seaborncolorblind5}{RGB}{204,120,188}
+\definecolor{seaborncolorblind6}{RGB}{202,145,97}
+\definecolor{seaborncolorblind7}{RGB}{251,175,228}
+\definecolor{seaborncolorblind8}{RGB}{148,148,148}
+\definecolor{seaborncolorblind9}{RGB}{236,225,51}
+\definecolor{seaborncolorblind10}{RGB}{86,180,233}
+
+\AtEndOfPackageFile{tabularx}{\newcolumntype{C}{>{\centering\arraybackslash}X}}
+\AtEndOfPackageFile{subfig}{\AtEndOfPackageFile{hyperref}{\newcommand{\subfigureautorefname}{\figureautorefname}}}
+
+\AtEndOfPackageFile{enumitem}{
+  \newlist{rqs}{enumerate}{1}
+  \setlist[rqs]{label={\textbf{RQ\arabic*}},ref={RQ\arabic*},resume}
+  \newlist{subrqs}{enumerate}{1}
+  \setlist[subrqs]{label={\textbf{RQ\arabic{rqsi}.\arabic*}},ref={RQ\arabic{rqsi}.\arabic*}}
+  \newlist{hypotheses}{enumerate}{1}
+  \setlist[hypotheses]{label={\(H_{\emptyset}^{\arabic{rqsi}.\arabic*}\)}}
+  \newlist{enumline}{enumerate*}{1}
+  \setlist[enumline]{label=(\roman*),itemjoin={{; }},itemjoin*={{; and }}}
+}
+
+\newcommand\coloredit[2]{\if@common@coloredits \textcolor{#1}{#2}\xspace\else #2\xspace\fi}
+\newcommand\makecoloredit[2]{\newcommand#1[1]{\coloredit{#2}{##1}}}
+
+\newcommand\@ensurecomma{\@ifnextchar,{}{\PackageWarning{mycommon}{
+      You appear to have forgotten a necessary comma}}}
+
+\newcommand\@ensuresingleperiod{\@ifnextchar.{}{.\@\PackageWarning{mycommon}{
+      You appear to have forgotten a necessary period}}}
+
+% \newcommand\foreign[1]{\@foreign{#1}}
+
+\newcommand\commaabbrev[2]{\def#1{\mycommon@font{#2}\@ensurecomma}}
+\newcommand\spaceabbrev[2]{\def#1{\mycommon@font{#2}\ }}
+\newcommand\periodabbrev[2]{\def#1{\mycommon@font{#2}\@ensuresingleperiod}}
+
+
+\commaabbrev{\eg}{e.g.}
+\commaabbrev{\Eg}{E.g.}
+\commaabbrev{\ie}{i.e.}
+\commaabbrev{\Ie}{I.e.}
+\commaabbrev{\viz}{viz.}
+\commaabbrev{\Viz}{Viz.}
+\commaabbrev{\ibid}{ibid.}
+\commaabbrev{\Ibid}{Ibid.}
+\commaabbrev{\ia}{i.a.}
+\commaabbrev{\Ia}{I.a.}
+
+\spaceabbrev{\cf}{cf.}
+\spaceabbrev{\Cf}{Cf.}
+
+
+\periodabbrev{\etal}{et al}
+\periodabbrev{\Etal}{Et al}
+\periodabbrev{\etc}{etc}
+\periodabbrev{\Etc}{Etc}
+\periodabbrev{\etseq}{et seq}
+\periodabbrev{\Etseq}{Et seq}
+\periodabbrev{\Sic}{Sic}
+
+\newcommand\ch{\ifdraft{\marginpar{{\tiny\textit{(CH*)}}}\textbf{*}}{}}
+
+\newenvironment{readernote}{\begin{center}\begin{minipage}{0.7\textwidth}\emph{\textbf{Note:}}}{\end{minipage}\end{center}}
+
+% Add environment for pretty little findings box
+\RequirePackage{tcolorbox}
+\tcbuselibrary{theorems}
+\tcbuselibrary{breakable}
+\newtcbtheorem[auto counter]{finding}{Finding}{fonttitle=\bfseries,breakable=true,label separator={},colframe=black!30}{}
+\AtEndOfPackageFile{cleveref}{%
+  \crefname{tcb@cnt@finding}{finding}{findings}%
+  \Crefname{tcb@cnt@finding}{Finding}{Findings}%
+}
+
+% Blinding Commands
+\newcommand\blind[2]{\if@common@blind{#2}\else{#1}\fi}
+\NewEnviron{blinded}{
+  \if@common@blind%
+  \else%
+    \BODY%
+  \fi
+}
+
+% Auto-blind biblatex entries as necessary
+\AtEndOfPackageFile{biblatex}{
+  \if@common@blind
+    \PackageInfo{mycommon}{Enabling blinding of biblatex entries with `keywords' contains `blinded'}
+    \DeclareSourcemap{
+      \maps[datatype=bibtex]{
+        \map[overwrite=true]{
+          \step[fieldsource=keywords,match=blinded,
+               fieldset=author,fieldvalue={Blinded}]
+        }
+      }
+    }
+  \fi
+}
+
+% Provide compatibility with acmart mechanism for blinding
+\AtEndOfClassFile*{acmart}{
+  \PackageInfo{mycommon}{Enabling blinded/blind usage of ACM class implementations.}
+  \if@ACM@anonymous
+    \@common@blindtrue
+  \else
+    \@common@blindfalse
+  \fi
+  \renewcommand\blind[2]{\anon[#2]{#1}}
+  \RenewEnviron{blinded}{
+    \begin{anonsupress}
+      \BODY
+    \end{anonsupress}
+  }
+}
+
+
+% Add an environment for edit comments
+\NewEnviron{editcomment}{%
+  \if@common@editnote%
+  \begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,size=small]%
+    \BODY%
+  \end{tcolorbox}%
+  \fi%
+}
+
+\newcommand\TODO[1][]{\if@common@todo\tcbox[colback=green!5!white,colframe=green!75!black,size=small,force
+    nobeforeafter,on line]{\tiny\textbf{TODO}\@ifnotmtarg{#1}{ (#1)}}\fi}
+\newcommand\WORKING[1][]{\if@common@todo\tcbox[colback=green!5!white,colframe=green!75!black,size=small,force
+    nobeforeafter,on line]{\tiny\textbf{WRK}\@ifnotmtarg{#1}{ (#1)}}\fi}
+
+% From pracjourn class
+\newrobustcmd\dash{\unskip\nobreak\thinspace\textemdash\thinspace\ignorespaces}
+
+\if@common@blind
+  \PackageWarning{mycommon}{Blinding is on.}
+\else
+  \PackageWarning{mycommon}{Blinding is off.}
+\fi
+
+\endinput
