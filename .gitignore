@@ -9,9 +9,9 @@
 *.pdfpc
 *.zip
 
+*/aux/*
 */handout/*
 */speakers-notes/*
-aux/*
 
 # Emacs Stuff
 *~
