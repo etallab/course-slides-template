@@ -107,10 +107,12 @@ clean-notes:
 
 # Build Slides
 
+.PHONY: FORCE_MAKE
+
 .PHONY: slides
 slides: $(SLIDES_PDFS)
 
-%/slides.pdf: %/slides.tex
+%/slides.pdf: %/slides.tex FORCE_MAKE
 	$(LATEX_COMMAND) -auxdir=$(@D)/aux -outdir=$(@D) $<
 
 
@@ -119,7 +121,7 @@ slides: $(SLIDES_PDFS)
 .PHONY: notes
 notes: $(NOTES_PDFS)
 
-%/notes.pdf: %/notes.tex
+%/notes.pdf: %/notes.tex FORCE_MAKE
 	$(LATEX_COMMAND) -auxdir=$(@D)/aux -outdir=$(@D) $<
 
 
@@ -129,13 +131,13 @@ notes: $(NOTES_PDFS)
 .PHONY: handouts
 handouts: $(HANDOUTS_PDFS)
 
-%/handout.pdf: %/handout/cropped.pdf
+%/handout.pdf: %/handout/cropped.pdf %/slides.tex FORCE_MAKE
 	pdfjam --nup 1x2 $< --letterpaper --landscape --outfile $@
 
 %/handout/cropped.pdf: %/handout/handout.pdf
 	pdfcrop --margins $(HANDOUT_MARGINS) $< $@
 
-%/handout/handout.pdf: %/slides.tex
+%/handout/handout.pdf: %/slides.tex FORCE_MAKE
 	mkdir -p $(@D)
 	sed -e 's/\\documentclass\[/\\documentclass[handout,notes,/g' -e 's/\\documentclass{/\\documentclass[handout,notes]{/g' $< > $(basename $@).ltx
 	$(LATEX_COMMAND) -auxdir=$(@D)/aux -outdir=$(@D) $(basename $@).ltx
@@ -146,13 +148,13 @@ handouts: $(HANDOUTS_PDFS)
 .PHONY: speakers-notes
 speakers-notes: $(SPEAKERS_PDFS)
 
-%/speakers-notes.pdf: %/speakers-notes/cropped.pdf
+%/speakers-notes.pdf: %/speakers-notes/cropped.pdf %/slides.tex FORCE_MAKE
 	pdfjam --nup 1x2 $< --letterpaper --landscape --outfile $@
 
 %/speakers-notes/cropped.pdf: %/speakers-notes/speakers-notes.pdf
 	pdfcrop --margins $(HANDOUT_MARGINS) $< $@
 
-%/speakers-notes/speakers-notes.pdf: %/slides.tex
+%/speakers-notes/speakers-notes.pdf: %/slides.tex FORCE_MAKE
 	mkdir -p $(@D)
 	sed -e 's/\\documentclass\[/\\documentclass[notes,/g' -e 's/\\documentclass{/\\documentclass[notes]{/g' $< > $(basename $@).ltx
 	$(LATEX_COMMAND) -auxdir=$(@D)/aux -outdir=$(@D) $(basename $@).ltx
