@@ -13,9 +13,14 @@ SLIDES_FILES:=$(wildcard **/slides.tex)
 SLIDES_PDFS:=$(patsubst %.tex,%.pdf,$(SLIDES_FILES))
 HANDOUTS_PDFS:=$(patsubst %/slides.tex,%/handout.pdf,$(SLIDES_FILES))
 SPEAKERS_PDFS:=$(patsubst %/slides.tex,%/speakers-notes.pdf,$(SLIDES_FILES))
-
 NOTES_FILES:=$(wildcard **/notes.tex)
 NOTES_PDFS:=$(patsubst %.tex,%.pdf,$(NOTES_FILES))
+
+# Named files
+NAMED_SLIDES:=$(patsubst %/slides.pdf,slides/%.pdf,$(SLIDES_PDFS))
+NAMED_HANDOUTS:=$(patsubst %/handout.pdf,handouts/%.pdf,$(HANDOUTS_PDFS))
+NAMED_SPEAKERS:=$(patsubst %/speakers-notes.pdf,speakers-notes/%.pdf,$(SPEAKERS_PDFS))
+NAMED_NOTES:=$(patsubst %/notes.pdf,notes/%.pdf,$(NOTES_PDFS))
 
 
 # Top-level targets
@@ -39,23 +44,55 @@ print-info:
 	@echo
 	@echo Available Targets:
 	@echo - all: Build slides, notes, handouts and speaker\'s notes
+	@echo - named: Build slides, notes, handouts and speaker\'s notes named after their directories
 	@echo - print-info: Show this message
 	@echo - zip: Build zip files containing artifacts
 	@echo - clean: Clean all artifacts
-	@echo - slides: Build slide decks
+	@echo - slides: Build slide decks (named-slides)
 	@echo - clean-slides: Clean slide-related artifacts (will clean aux directory)
-	@echo - notes: Build written notes
+	@echo - notes: Build written notes (named-notes)
 	@echo - clean-notes: Clean notes-related artifacts (will clean aux directory)
-	@echo - handouts: Build handouts
+	@echo - handouts: Build handouts (named-handouts)
 	@echo - clean-handouts: Clean handout-related artifacts (will clean aux directory)
-	@echo - speakers-notes: Build speaker\'s notes \(handout-style PDFs without handout mode set\)
+	@echo - speakers-notes: Build speaker\'s notes \(handout-style PDFs without handout mode set\) (named-speakers-notes)
 	@echo - clean-speakers-notes: Clean speakers-notes-related artifacts (will clean aux directory)
+
+
+# Named File Targets
+
+.PHONY: named
+named: named-slides named-handouts named-speakers-notes named-notes
+
+.PHONY: named-slides
+named-slides: $(NAMED_SLIDES)
+slides/%.pdf: %/slides.pdf
+	@mkdir -p slides
+	cp $^ $@
+
+.PHONY: named-handouts
+named-handouts: $(NAMED_HANDOUTS)
+handouts/%.pdf: %/handout.pdf
+	@mkdir -p handouts
+	cp $^ $@
+
+.PHONY: named-speakers-notes
+named-speakers-notes: $(NAMED_SPEAKERS)
+speakers-notes/%.pdf: %/speakers-notes.pdf
+	@mkdir -p speakers-notes
+	cp $^ $@
+
+.PHONY: named-notes
+named-notes: $(NAMED_NOTES)
+notes/%.pdf: %/notes.pdf
+	@mkdir -p notes
+	cp $^ $@
+
 
 
 # Build a Zip File
 
 .PHONY: zip
-zip: notes.zip all.zip
+zip: notes.zip all.zip named.zip
 
 notes.zip: $(HANDOUTS_PDFS) $(NOTES_PDFS)
 	zip -ur $@ $^
@@ -63,12 +100,15 @@ notes.zip: $(HANDOUTS_PDFS) $(NOTES_PDFS)
 all.zip: $(SLIDES_PDFS) $(HANDOUTS_PDFS) $(SPEAKERS_PDFS) $(NOTES_PDFS)
 	zip -ur $@ $^
 
+named.zip: $(NAMED_SLIDES) $(NAMED_HANDOUTS) $(NAMED_SPEAKERS) $(NAMED_NOTES)
+	zip -ur $@ $^
+
 
 # Clean Up
 
 .PHONY: clean
 clean:
-	$(RM) notes.zip all.zip
+	$(RM) notes.zip all.zip named.zip
 	$(RM) -r $(dir $(wildcard **/handout/*))
 	$(RM) -r $(dir $(wildcard **/speakers-notes/*))
 	$(RM) -r $(dir $(wildcard **/aux/*))
@@ -107,12 +147,10 @@ clean-notes:
 
 # Build Slides
 
-.PHONY: FORCE_MAKE
-
 .PHONY: slides
 slides: $(SLIDES_PDFS)
 
-%/slides.pdf: %/slides.tex FORCE_MAKE
+%/slides.pdf: %/slides.tex
 	$(LATEX_COMMAND) -auxdir=$(@D)/aux -outdir=$(@D) $<
 
 
@@ -121,7 +159,7 @@ slides: $(SLIDES_PDFS)
 .PHONY: notes
 notes: $(NOTES_PDFS)
 
-%/notes.pdf: %/notes.tex FORCE_MAKE
+%/notes.pdf: %/notes.tex
 	$(LATEX_COMMAND) -auxdir=$(@D)/aux -outdir=$(@D) $<
 
 
@@ -131,13 +169,13 @@ notes: $(NOTES_PDFS)
 .PHONY: handouts
 handouts: $(HANDOUTS_PDFS)
 
-%/handout.pdf: %/handout/cropped.pdf %/slides.tex FORCE_MAKE
+%/handout.pdf: %/handout/cropped.pdf
 	pdfjam --nup 1x2 $< --letterpaper --landscape --outfile $@
 
 %/handout/cropped.pdf: %/handout/handout.pdf
 	pdfcrop --margins $(HANDOUT_MARGINS) $< $@
 
-%/handout/handout.pdf: %/slides.tex FORCE_MAKE
+%/handout/handout.pdf: %/slides.tex
 	mkdir -p $(@D)
 	sed -e 's/\\documentclass\[/\\documentclass[handout,notes,/g' -e 's/\\documentclass{/\\documentclass[handout,notes]{/g' $< > $(basename $@).ltx
 	$(LATEX_COMMAND) -auxdir=$(@D)/aux -outdir=$(@D) $(basename $@).ltx
@@ -148,13 +186,13 @@ handouts: $(HANDOUTS_PDFS)
 .PHONY: speakers-notes
 speakers-notes: $(SPEAKERS_PDFS)
 
-%/speakers-notes.pdf: %/speakers-notes/cropped.pdf %/slides.tex FORCE_MAKE
+%/speakers-notes.pdf: %/speakers-notes/cropped.pdf
 	pdfjam --nup 1x2 $< --letterpaper --landscape --outfile $@
 
 %/speakers-notes/cropped.pdf: %/speakers-notes/speakers-notes.pdf
 	pdfcrop --margins $(HANDOUT_MARGINS) $< $@
 
-%/speakers-notes/speakers-notes.pdf: %/slides.tex FORCE_MAKE
+%/speakers-notes/speakers-notes.pdf: %/slides.tex
 	mkdir -p $(@D)
 	sed -e 's/\\documentclass\[/\\documentclass[notes,/g' -e 's/\\documentclass{/\\documentclass[notes]{/g' $< > $(basename $@).ltx
 	$(LATEX_COMMAND) -auxdir=$(@D)/aux -outdir=$(@D) $(basename $@).ltx
