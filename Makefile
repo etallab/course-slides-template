@@ -162,6 +162,7 @@ notes: $(NOTES_PDFS)
 %/slide-images.ltx: %/slides.tex
 	sed -e 's/show notes on second screen\(=left\|=right\|=bottom\|=top\)\?/hide notes/g' -e 's/\\documentclass\[/\\documentclass[handout,/g' -e 's/\\documentclass{/\\documentclass[handout]{/g' $< > $@
 
+.PRECIOUS: %/slide-images.pdf
 %/slide-images.pdf: %/slide-images.ltx
 	$(LATEX_COMMAND) $<
 
