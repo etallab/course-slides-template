@@ -134,7 +134,11 @@ Commands]
   \RequirePackage[T1]{fontenc}
   \RequirePackage[p,osf]{ETbb}
   \RequirePackage[scaled=.95,type1]{cabin}
-  \RequirePackage[libertine,vvarbb]{newtxmath}
+  \@ifpackageloaded{unicode-math}{%
+    \setmathfont[Scale=MatchUppercase]{libertinusmath-regular.otf}%
+  }{%
+    \RequirePackage[libertine,vvarbb]{newtxmath}%
+  }
 \fi
 
 \if@common@plextt
