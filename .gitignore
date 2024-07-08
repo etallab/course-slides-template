@@ -8,6 +8,7 @@
 !.latexmkrc
 *.pdfpc
 *.zip
+*.ltx
 
 */aux/*
 */handout/*
