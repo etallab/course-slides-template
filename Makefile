@@ -165,6 +165,7 @@ notes: $(NOTES_PDFS)
 .PRECIOUS: %/slide-images.pdf
 %/slide-images.pdf: %/slide-images.ltx
 	$(LATEX_COMMAND) $<
+	@$(RM) $(basename $@).synctex.gz
 
 
 # Build Handouts
@@ -183,6 +184,7 @@ handouts: $(HANDOUTS_PDFS)
 
 %/handout-temp.pdf: %/handout-temp.ltx
 	$(LATEX_COMMAND) $<
+	@$(RM) $(basename @).synctex.gz
 
 
 # Build Speaker's Notes
@@ -201,3 +203,4 @@ speakers-notes: $(SPEAKERS_PDFS)
 
 %/speakers-notes-temp.pdf: %/speakers-notes-temp.ltx
 	$(LATEX_COMMAND) $<
+	@$(RM) $(basename @).synctex.gz
