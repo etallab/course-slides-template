@@ -114,7 +114,7 @@ clean:
 	$(RM) $(SLIDES_PDFS)
 	$(RM) $(HANDOUTS_PDFS)
 	$(RM) $(SPEAKERS_PDFS)
-	$(RM) $(NOTES_PDFS)
+	$(RM) $(NOTES_PDFS) $(wildcard **/slide-images.pdf)
 	$(RM) -r notes speakers-notes handouts slides
 
 .PHONY: clean-slides
