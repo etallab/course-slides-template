@@ -26,7 +26,7 @@ NAMED_NOTES:=$(patsubst %/notes.pdf,notes/%.pdf,$(NOTES_PDFS))
 # Top-level targets
 
 .PHONY: all
-all: slides handouts speakers-notes notes
+all: slides handouts speakers-notes notes named
 
 .PHONY: print-info
 print-info:
