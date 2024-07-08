@@ -1,7 +1,7 @@
 # TeX-ing Options
 LATEX_OPTIONS := -interaction=nonstopmode -file-line-error
 LATEX_ENGINE := lua
-LATEX_COMMAND := latexmk -pdf$(LATEX_ENGINE) $(LATEX_OPTIONS)
+LATEX_COMMAND := latexmk -cd -auxdir=aux -pdf$(LATEX_ENGINE) $(LATEX_OPTIONS)
 
 
 # Handout Options
@@ -47,7 +47,7 @@ print-info:
 	@echo - named: Build slides, notes, handouts and speaker\'s notes named after their directories
 	@echo - print-info: Show this message
 	@echo - zip: Build zip files containing artifacts
-	@echo - clean: Clean all artifacts
+	@echo - clean: Clean all artifacts (clean-named)
 	@echo - slides: Build slide decks (named-slides)
 	@echo - clean-slides: Clean slide-related artifacts (will clean aux directory)
 	@echo - notes: Build written notes (named-notes)
@@ -109,8 +109,6 @@ named.zip: $(NAMED_SLIDES) $(NAMED_HANDOUTS) $(NAMED_SPEAKERS) $(NAMED_NOTES)
 .PHONY: clean
 clean:
 	$(RM) notes.zip all.zip named.zip
-	$(RM) -r $(dir $(wildcard **/handout/*))
-	$(RM) -r $(dir $(wildcard **/speakers-notes/*))
 	$(RM) -r $(dir $(wildcard **/aux/*))
 	$(RM) -r $(wildcard **/*.synctex.gz)
 	$(RM) $(SLIDES_PDFS)
@@ -144,6 +142,10 @@ clean-notes:
 	$(RM) -r $(dir $(wildcard **/aux/*))
 	$(RM) -r $(wildcard **/*.synctex.gz)
 
+.PHONY: clean-named
+clean-named:
+	$(RM) -r notes speakers-notes handouts slides
+
 
 # Build Slides
 
@@ -151,7 +153,7 @@ clean-notes:
 slides: $(SLIDES_PDFS)
 
 %/slides.pdf: %/slides.tex
-	$(LATEX_COMMAND) -auxdir=$(@D)/aux -outdir=$(@D) $<
+	$(LATEX_COMMAND) $<
 
 
 # Build Notes
@@ -159,9 +161,14 @@ slides: $(SLIDES_PDFS)
 .PHONY: notes
 notes: $(NOTES_PDFS)
 
-%/notes.pdf: %/notes.tex
-	$(LATEX_COMMAND) -auxdir=$(@D)/aux -outdir=$(@D) $<
+%/notes.pdf: %/notes.tex %/slide-images.pdf
+	$(LATEX_COMMAND) $<
 
+%/slide-images.ltx: %/slides.tex
+	sed -e 's/show notes on second screen\(=left\|=right\|=bottom\|=top\)\?/hide notes/g' -e 's/\\documentclass\[/\\documentclass[handout,/g' -e 's/\\documentclass{/\\documentclass[handout]{/g' $< > $@
+
+%/slide-images.pdf: %/slide-images.ltx
+	$(LATEX_COMMAND) $<
 
 
 # Build Handouts
@@ -169,16 +176,17 @@ notes: $(NOTES_PDFS)
 .PHONY: handouts
 handouts: $(HANDOUTS_PDFS)
 
-%/handout.pdf: %/handout/cropped.pdf
+%/handout.pdf: %/cropped.pdf
 	pdfjam --nup 1x2 $< --letterpaper --landscape --outfile $@
 
-%/handout/cropped.pdf: %/handout/handout.pdf
+%/cropped.pdf: %/handout-temp.pdf
 	pdfcrop --margins $(HANDOUT_MARGINS) $< $@
 
-%/handout/handout.pdf: %/slides.tex
-	mkdir -p $(@D)
-	sed -e 's/\\documentclass\[/\\documentclass[handout,notes,/g' -e 's/\\documentclass{/\\documentclass[handout,notes]{/g' $< > $(basename $@).ltx
-	$(LATEX_COMMAND) -auxdir=$(@D)/aux -outdir=$(@D) $(basename $@).ltx
+%/handout-temp.ltx: %/slides.tex
+	sed -e 's/\\documentclass\[/\\documentclass[handout,notes,/g' -e 's/\\documentclass{/\\documentclass[handout,notes]{/g' $< > $@
+
+%/handout-temp.pdf: %/handout-temp.ltx
+	$(LATEX_COMMAND) $<
 
 
 # Build Speaker's Notes
@@ -186,14 +194,14 @@ handouts: $(HANDOUTS_PDFS)
 .PHONY: speakers-notes
 speakers-notes: $(SPEAKERS_PDFS)
 
-%/speakers-notes.pdf: %/speakers-notes/cropped.pdf
+%/speakers-notes.pdf: %/speakers-notes-cropped.pdf
 	pdfjam --nup 1x2 $< --letterpaper --landscape --outfile $@
 
-%/speakers-notes/cropped.pdf: %/speakers-notes/speakers-notes.pdf
+%/speakers-notes-cropped.pdf: %/speakers-notes-temp.pdf
 	pdfcrop --margins $(HANDOUT_MARGINS) $< $@
 
-%/speakers-notes/speakers-notes.pdf: %/slides.tex
-	mkdir -p $(@D)
+%/speakers-notes-temp.ltx: %/slides.tex
 	sed -e 's/\\documentclass\[/\\documentclass[notes,/g' -e 's/\\documentclass{/\\documentclass[notes]{/g' $< > $(basename $@).ltx
-	$(LATEX_COMMAND) -auxdir=$(@D)/aux -outdir=$(@D) $(basename $@).ltx
 
+%/speakers-notes-temp.pdf: %/speakers-notes-temp.ltx
+	$(LATEX_COMMAND) $<
