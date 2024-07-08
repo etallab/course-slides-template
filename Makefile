@@ -142,12 +142,16 @@ clean-named:
 	$(RM) -r notes speakers-notes handouts slides
 
 
+# Build Forcing
+.PHONY: FORCE_LATEX
+
+
 # Build Slides
 
 .PHONY: slides
 slides: $(SLIDES_PDFS)
 
-%/slides.pdf: %/slides.tex
+%/slides.pdf: %/slides.tex FORCE_LATEX
 	$(LATEX_COMMAND) $<
 
 
@@ -156,7 +160,7 @@ slides: $(SLIDES_PDFS)
 .PHONY: notes
 notes: $(NOTES_PDFS)
 
-%/notes.pdf: %/notes.tex %/slide-images.pdf
+%/notes.pdf: %/notes.tex %/slide-images.pdf FORCE_LATEX
 	$(LATEX_COMMAND) $<
 
 %/slide-images.ltx: %/slides.tex
