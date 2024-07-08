@@ -120,27 +120,21 @@ clean:
 .PHONY: clean-slides
 clean-slides:
 	$(RM) $(SLIDES_PDFS)
-	$(RM) -r $(dir $(wildcard **/aux/*))
 	$(RM) -r $(wildcard **/*.synctex.gz)
 
 .PHONY: clean-handouts
 clean-handouts:
 	$(RM) $(HANDOUTS_PDFS)
-	$(RM) -r $(dir $(wildcard **/handout/*))
-	$(RM) -r $(dir $(wildcard **/aux/*))
 	$(RM) -r $(wildcard **/*.synctex.gz)
 
 .PHONY: clean-speakers-notes
 clean-speakers-notes:
 	$(RM) $(SPEAKERS_PDFS)
-	$(RM) -r $(dir $(wildcard **/speakers-notes/*))
-	$(RM) -r $(dir $(wildcard **/aux/*))
 	$(RM) -r $(wildcard **/*.synctex.gz)
 
 .PHONY: clean-notes
 clean-notes:
 	$(RM) $(NOTES_PDFS)
-	$(RM) -r $(dir $(wildcard **/aux/*))
 	$(RM) -r $(wildcard **/*.synctex.gz)
 
 .PHONY: clean-named
