@@ -1,4 +1,4 @@
-\ProvidesPackage{mycommon}[2023/08/07 Common/Personal Utility
+\ProvidesPackage{mycommon}[2024/07/11 Common/Personal Utility
 Commands]
 
 \RequirePackage{filehook}
@@ -131,14 +131,41 @@ Commands]
 \fi
 
 \if@common@etbb
-  \RequirePackage[T1]{fontenc}
-  \RequirePackage[p,osf]{ETbb}
-  \RequirePackage[scaled=.95,type1]{cabin}
-  \@ifpackageloaded{unicode-math}{%
-    \setmathfont[Scale=MatchUppercase]{libertinusmath-regular.otf}%
-  }{%
-    \RequirePackage[libertine,vvarbb]{newtxmath}%
-  }
+  \ifxetex
+    \RequirePackage{fontspec}
+    \setmainfont{ETbb}
+    \RequirePackage[sfdefault,scaled=.95,type1]{cabin}
+    \@ifpackageloaded{unicode-math}{%
+        \setmathfont[Scale=MatchUppercase]{libertinusmath-regular.otf}%
+      }{%
+        \RequirePackage[libertine,vvarbb]{newtxmath}%
+      }
+  \else
+    \ifluatex
+      \RequirePackage{fontspec}
+      \setmainfont{ETbb}
+      \setsansfont
+        [ UprightFont    = *-Regular ,
+          ItalicFont     = *-Italic ,
+          BoldFont       = *-Bold , 
+          BoldItalicFont = *-Bold Italic ]
+        {Cabin}[Scale=0.95,Ligatures=TeX]
+      \@ifpackageloaded{unicode-math}{%
+        \setmathfont[Scale=MatchUppercase]{libertinusmath-regular.otf}%
+      }{%
+        \RequirePackage[libertine,vvarbb]{newtxmath}%
+      }
+    \else
+      \RequirePackage[p,osf]{ETbb}
+      \RequirePackage[sfdefault,scaled=.95,type1]{cabin}
+      \@ifpackageloaded{unicode-math}{%
+        \setmathfont[Scale=MatchUppercase]{libertinusmath-regular.otf}%
+      }{%
+        \RequirePackage[libertine,vvarbb]{newtxmath}%
+      }
+      \RequirePackage[T1]{fontenc}
+    \fi
+  \fi
 \fi
 
 \if@common@plextt
