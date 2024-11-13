@@ -93,8 +93,9 @@ notes/%.pdf: %/notes.pdf
 	cp $^ $@
 
 .PHONY: named-booklets
-booklets/%.pdf: %/booklets.pdf
-	@mkdir -p notes
+named-booklets: $(NAMED_BOOKLETS)
+booklets/%.pdf: %/booklet.pdf
+	@mkdir -p booklets
 	cp $^ $@
 
 
