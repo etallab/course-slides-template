@@ -15,18 +15,20 @@ HANDOUTS_PDFS:=$(patsubst %/slides.tex,%/handout.pdf,$(SLIDES_FILES))
 SPEAKERS_PDFS:=$(patsubst %/slides.tex,%/speakers-notes.pdf,$(SLIDES_FILES))
 NOTES_FILES:=$(wildcard **/notes.tex)
 NOTES_PDFS:=$(patsubst %.tex,%.pdf,$(NOTES_FILES))
+BOOKLETS_PDFS:=$(patsubst %/notes.pdf,%/booklet.pdf,$(NOTES_PDFS))
 
 # Named files
 NAMED_SLIDES:=$(patsubst %/slides.pdf,slides/%.pdf,$(SLIDES_PDFS))
 NAMED_HANDOUTS:=$(patsubst %/handout.pdf,handouts/%.pdf,$(HANDOUTS_PDFS))
 NAMED_SPEAKERS:=$(patsubst %/speakers-notes.pdf,speakers-notes/%.pdf,$(SPEAKERS_PDFS))
 NAMED_NOTES:=$(patsubst %/notes.pdf,notes/%.pdf,$(NOTES_PDFS))
+NAMED_BOOKLETS:=$(patsubst %/booklet.pdf,booklets/%.pdf,$(BOOKLETS_PDFS))
 
 
 # Top-level targets
 
 .PHONY: all
-all: slides handouts speakers-notes notes named
+all: slides handouts speakers-notes notes booklets named
 
 .PHONY: print-info
 print-info:
@@ -41,6 +43,7 @@ print-info:
 	@echo - Handouts: $(HANDOUTS_PDFS)
 	@echo - Speakers Notes: $(SPEAKERS_PDFS)
 	@echo - Notes: $(NOTES_PDFS)
+	@echo - Booklets: $(BOOKLETS_PDFS)
 	@echo
 	@echo Available Targets:
 	@echo - all: Build slides, notes, handouts and speaker\'s notes
@@ -52,6 +55,8 @@ print-info:
 	@echo - clean-slides: Clean slide-related artifacts \(will clean aux directory\)
 	@echo - notes: Build written notes \(named-notes\)
 	@echo - clean-notes: Clean notes-related artifacts \(will clean aux directory\)
+	@echo - booklets: Build Notes Booklets \(named-booklets\)
+	@echo - clean-booklets: Clean booklets-related artifacts
 	@echo - handouts: Build handouts \(named-handouts\)
 	@echo - clean-handouts: Clean handout-related artifacts \(will clean aux directory\)
 	@echo - speakers-notes: Build speaker\'s notes \(handout-style PDFs without handout mode set\) \(named-speakers-notes\)
@@ -61,7 +66,7 @@ print-info:
 # Named File Targets
 
 .PHONY: named
-named: named-slides named-handouts named-speakers-notes named-notes
+named: named-slides named-handouts named-speakers-notes named-notes named-booklets
 
 .PHONY: named-slides
 named-slides: $(NAMED_SLIDES)
@@ -87,6 +92,10 @@ notes/%.pdf: %/notes.pdf
 	@mkdir -p notes
 	cp $^ $@
 
+.PHONY: named-booklets
+booklets/%.pdf: %/booklets.pdf
+	@mkdir -p notes
+	cp $^ $@
 
 
 # Build a Zip File
@@ -115,7 +124,8 @@ clean:
 	$(RM) $(HANDOUTS_PDFS)
 	$(RM) $(SPEAKERS_PDFS)
 	$(RM) $(NOTES_PDFS) $(wildcard **/slide-images.pdf)
-	$(RM) -r notes speakers-notes handouts slides
+	$(RM) $(BOOKLETS_PDFS)
+	$(RM) -r notes speakers-notes handouts slides booklets
 
 .PHONY: clean-slides
 clean-slides:
@@ -137,9 +147,13 @@ clean-notes:
 	$(RM) $(NOTES_PDFS)
 	$(RM) -r $(wildcard **/*.synctex.gz)
 
+.PHONY: clean-booklets
+clean-booklets:
+	$(RM) $(BOOKLETS_PDFS)
+
 .PHONY: clean-named
 clean-named:
-	$(RM) -r notes speakers-notes handouts slides
+	$(RM) -r notes speakers-notes handouts slides booklets
 
 
 # Build Forcing
@@ -170,6 +184,15 @@ notes: $(NOTES_PDFS)
 %/slide-images.pdf: %/slide-images.ltx
 	$(LATEX_COMMAND) $<
 	@$(RM) $(basename $@).synctex.gz
+
+
+# Build Booklets
+
+.PHONY: booklets
+booklets: $(BOOKLETS_PDFS)
+
+%/booklet.pdf: %/notes.pdf
+	pdfjam -o $@ --papersize '{17in,11in}' --booklet true $< '-'
 
 
 # Build Handouts
