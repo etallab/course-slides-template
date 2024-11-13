@@ -1,4 +1,4 @@
-\ProvidesPackage{course}[2024/06/10]
+\ProvidesPackage{course}[2024/11/12]
 
 \ProcessOptions\relax
 
@@ -12,5 +12,15 @@
 
 \newcommand{\term}{TERM: Change me in \texttt{texmf/course.sty}.}
 \newcommand{\course}{COURSE: Change me in \texttt{texmf/course.sty}.}
+
+\AtEndOfClassFile*{kaohandt}{
+  \RequirePackage{chngcntr}
+  \counterwithout{sidenote}{section}
+  \definecolor{listingkeywords}{rgb}{0,0,0}
+  \definecolor{listingidentifiers}{rgb}{0,0,0}
+  \definecolor{listingcomments}{rgb}{0,0,0}
+  \definecolor{listingstrings}{rgb}{0,0,0}
+  \definecolor{listingnumbers}{rgb}{0,0,0}
+}
 
 \endinput
