@@ -16,6 +16,7 @@ SPEAKERS_PDFS:=$(patsubst %/slides.tex,%/speakers-notes.pdf,$(SLIDES_FILES))
 NOTES_FILES:=$(wildcard **/notes.tex)
 NOTES_PDFS:=$(patsubst %.tex,%.pdf,$(NOTES_FILES))
 BOOKLETS_PDFS:=$(patsubst %/notes.pdf,%/booklet.pdf,$(NOTES_PDFS))
+RESOURCES_ZIPS:=$(patsubst %/resources/,%/resources.zip,$(wildcard **/resources/))
 
 # Named files
 NAMED_SLIDES:=$(patsubst %/slides.pdf,slides/%.pdf,$(SLIDES_PDFS))
@@ -23,12 +24,13 @@ NAMED_HANDOUTS:=$(patsubst %/handout.pdf,handouts/%.pdf,$(HANDOUTS_PDFS))
 NAMED_SPEAKERS:=$(patsubst %/speakers-notes.pdf,speakers-notes/%.pdf,$(SPEAKERS_PDFS))
 NAMED_NOTES:=$(patsubst %/notes.pdf,notes/%.pdf,$(NOTES_PDFS))
 NAMED_BOOKLETS:=$(patsubst %/booklet.pdf,booklets/%.pdf,$(BOOKLETS_PDFS))
+NAMED_RESOURCES:=$(patsubst %/resources.zip,resources/%.zip,$(RESOURCES_ZIPS))
 
 
 # Top-level targets
 
 .PHONY: all
-all: slides handouts speakers-notes notes booklets named
+all: slides handouts speakers-notes notes booklets resources named
 
 .PHONY: print-info
 print-info:
@@ -44,6 +46,7 @@ print-info:
 	@echo - Speakers Notes: $(SPEAKERS_PDFS)
 	@echo - Notes: $(NOTES_PDFS)
 	@echo - Booklets: $(BOOKLETS_PDFS)
+	@echo - Resource Zips: $(RESOURCES_ZIPS)
 	@echo
 	@echo Available Targets:
 	@echo - all: Build slides, notes, handouts and speaker\'s notes
@@ -61,12 +64,14 @@ print-info:
 	@echo - clean-handouts: Clean handout-related artifacts \(will clean aux directory\)
 	@echo - speakers-notes: Build speaker\'s notes \(handout-style PDFs without handout mode set\) \(named-speakers-notes\)
 	@echo - clean-speakers-notes: Clean speakers-notes-related artifacts \(will clean aux directory\)
+	@echo - resources: Generate resources.zip files for
+	@echo - clean-resources: Clean resources.zip related artifacts.
 
 
 # Named File Targets
 
 .PHONY: named
-named: named-slides named-handouts named-speakers-notes named-notes named-booklets
+named: named-slides named-handouts named-speakers-notes named-notes named-booklets named-resources
 
 .PHONY: named-slides
 named-slides: $(NAMED_SLIDES)
@@ -98,6 +103,12 @@ booklets/%.pdf: %/booklet.pdf
 	@mkdir -p booklets
 	cp $^ $@
 
+.PHONY: named-resources
+named-resources: $(NAMED_RESOURCES)
+resources/%.zip: %/resources.zip
+	@mkdir -p resources
+	cp $^ $@
+
 
 # Build a Zip File
 
@@ -126,7 +137,8 @@ clean:
 	$(RM) $(SPEAKERS_PDFS)
 	$(RM) $(NOTES_PDFS) $(wildcard **/slide-images.pdf)
 	$(RM) $(BOOKLETS_PDFS)
-	$(RM) -r notes speakers-notes handouts slides booklets
+	$(RM) $(RESOURCES_ZIPS)
+	$(RM) -r notes speakers-notes handouts slides booklets resources
 
 .PHONY: clean-slides
 clean-slides:
@@ -152,9 +164,12 @@ clean-notes:
 clean-booklets:
 	$(RM) $(BOOKLETS_PDFS)
 
+.PHONY: clean-resources
+	$(RM) $(RESOURCES_ZIPS)
+
 .PHONY: clean-named
 clean-named:
-	$(RM) -r notes speakers-notes handouts slides booklets
+	$(RM) -r notes speakers-notes handouts slides booklets resources
 
 
 # Build Forcing
@@ -194,6 +209,21 @@ booklets: $(BOOKLETS_PDFS)
 
 %/booklet.pdf: %/notes.pdf
 	pdfjam -o $@ --papersize '{17in,11in}' --booklet true $< '-'
+
+
+# Build Resource Zips
+.PHONY: FORCE_ZIP
+
+.PHONY: resources
+resources: $(RESOURCE_ZIPS)
+
+%/resources.zip: FORCE_ZIP
+	7z u -xr@texmf/zip-excludes.txt $@ $(basename $@)
+	7z l -ba -slt $@ | grep '^Path =' | cut -d' ' -f 3- > original-names.txt
+	cut -d/ -f 1,3- original-names.txt > new-names.txt
+	paste -d'\n' original-names.txt new-names.txt > renames.txt
+	7z rn $@ -ssc @renames.txt
+	$(RM) original-names.txt new-names.txt renames.txt
 
 
 # Build Handouts
