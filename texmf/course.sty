@@ -23,4 +23,11 @@
   \definecolor{listingnumbers}{rgb}{0,0,0}
 }
 
+\RequirePackage{filehook}
+
+\AtEndOfPackageFile*{enumitem}{
+  \newlist{objectives}{enumerate}{1}
+  \setlist[objectives]{label={Objective \arabic*},font=\bfseries}
+}
+
 \endinput
