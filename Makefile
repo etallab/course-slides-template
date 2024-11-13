@@ -47,15 +47,15 @@ print-info:
 	@echo - named: Build slides, notes, handouts and speaker\'s notes named after their directories
 	@echo - print-info: Show this message
 	@echo - zip: Build zip files containing artifacts
-	@echo - clean: Clean all artifacts (clean-named)
-	@echo - slides: Build slide decks (named-slides)
-	@echo - clean-slides: Clean slide-related artifacts (will clean aux directory)
-	@echo - notes: Build written notes (named-notes)
-	@echo - clean-notes: Clean notes-related artifacts (will clean aux directory)
-	@echo - handouts: Build handouts (named-handouts)
-	@echo - clean-handouts: Clean handout-related artifacts (will clean aux directory)
-	@echo - speakers-notes: Build speaker\'s notes \(handout-style PDFs without handout mode set\) (named-speakers-notes)
-	@echo - clean-speakers-notes: Clean speakers-notes-related artifacts (will clean aux directory)
+	@echo - clean: Clean all artifacts \(clean-name\)
+	@echo - slides: Build slide decks \(named-slides\)
+	@echo - clean-slides: Clean slide-related artifacts \(will clean aux directory\)
+	@echo - notes: Build written notes \(named-notes\)
+	@echo - clean-notes: Clean notes-related artifacts \(will clean aux directory\)
+	@echo - handouts: Build handouts \(named-handouts\)
+	@echo - clean-handouts: Clean handout-related artifacts \(will clean aux directory\)
+	@echo - speakers-notes: Build speaker\'s notes \(handout-style PDFs without handout mode set\) \(named-speakers-notes\)
+	@echo - clean-speakers-notes: Clean speakers-notes-related artifacts \(will clean aux directory\)
 
 
 # Named File Targets
