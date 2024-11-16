@@ -23,6 +23,29 @@
   \definecolor{listingcomments}{rgb}{0,0,0}
   \definecolor{listingstrings}{rgb}{0,0,0}
   \definecolor{listingnumbers}{rgb}{0,0,0}
+  \setcounter{secnumdepth}{-\maxdimen}
+  \pagestyle{scrheadings}
+}
+
+\AtEndOfPackageFile*{listings}{
+  \lstdefinestyle{default}{
+    basicstyle=\ttfamily,
+    breaklines=true,
+    prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+    tabsize=4,
+    numbers=left,
+    numberstyle=\tiny
+  }
+  \lstset{
+    escapeinside={(*@}{@*)},
+    style=default
+  }
+}
+
+\AtEndOfClassFile*{beamer}{
+  \AtEndOfPackageFile*{listings}{
+    \lstset{captionpos=b}
+  }
 }
 
 \AtEndOfPackageFile*{enumitem}{
