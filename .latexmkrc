@@ -11,3 +11,6 @@ ensure_path("BIBINPUTS", "${rootdir}/texmf//");
 ensure_path("BIBINPUTS", "${rootdir}/");
 
 ensure_path("BSTINPUTS", "${rootdir}/texmf//");
+
+# Note some generated filenames for cleanup.
+push @generated_exts, "snm", "nav", "pdfpc", "vrb";
