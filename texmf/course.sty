@@ -13,6 +13,8 @@
 \newcommand{\term}{TERM: Change me in \texttt{texmf/course.sty}.}
 \newcommand{\course}{COURSE: Change me in \texttt{texmf/course.sty}.}
 
+\RequirePackage{filehook}
+
 \AtEndOfClassFile*{kaohandt}{
   \RequirePackage{chngcntr}
   \counterwithout{sidenote}{section}
@@ -22,8 +24,6 @@
   \definecolor{listingstrings}{rgb}{0,0,0}
   \definecolor{listingnumbers}{rgb}{0,0,0}
 }
-
-\RequirePackage{filehook}
 
 \AtEndOfPackageFile*{enumitem}{
   \newlist{objectives}{enumerate}{1}
