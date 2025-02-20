@@ -1,4 +1,4 @@
-\ProvidesPackage{mycommon}[2024/07/11 Common/Personal Utility
+\ProvidesPackage{mycommon}[2025/02/12 Common/Personal Utility
 Commands]
 
 \RequirePackage{filehook}
@@ -279,6 +279,7 @@ Commands]
   \crefname{tcb@cnt@finding}{finding}{findings}%
   \Crefname{tcb@cnt@finding}{Finding}{Findings}%
 }
+\newtcolorbox[auto counter]{question}[2][]{colback=green!5!white,colframe=green!75!black,fonttitle=\bfseries,title={Question~\thetcbcounter: #2},height=4cm,#1}
 
 % Blinding Commands
 \newcommand\blind[2]{\if@common@blind{#2}\else{#1}\fi}
