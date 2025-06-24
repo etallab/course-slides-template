@@ -1,4 +1,6 @@
-\documentclass[twoside,letterpaper]{kaohandt}
+\documentclass[paper=letter,twoside,fontsize=10pt,parskip=half,mpinclude=true]{scrartcl}
+
+\KOMAoptions{captions=tableheading,bibliography=totoc}
 
 \usepackage[cleanlook,british]{isodate}
 \usepackage[etbb,plextt]{mycommon}
@@ -10,7 +12,9 @@
 
 \usepackage{course,lecture}
 
-\newcommand{\showslide}[1]{\includegraphics[page=#1]{slide-images.pdf}}
+\NewDocumentCommand{\showslide}{O{}m}{\includegraphics[page=#2,#1]{slide-images.pdf}}
+
+\usepackage[footnote=true]{snotez}
 
 \title{\thislecture}
 \subtitle{\course}
@@ -28,7 +32,6 @@
 \begin{document}
 
 \maketitle
-\margintoc
 
 \section{Overview}
 \label{sec:overview}
@@ -42,7 +45,7 @@ At the end of this lecture, students will be able to:
 \item \label{obj:todo} TODO
 \end{objectives}
 
-\showslide{1}
+\showslide[width=0.7\linewidth]{1}
 
 % TODO
 
