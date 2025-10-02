@@ -1,0 +1,59 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usetheme[sectionpage=none,progressbar=foot,block=fill,standoutnumbering=hide]{moloch}
+\setbeamertemplate{page number in foot}[totalframenumber]
+
+\usepackage[british,cleanlook]{isodate}
+\usepackage[plextt,etbb]{mycommon}
+\usepackage{csquotes}
+\usepackage{booktabs,tabularx}
+\usepackage{pifont}
+
+\usepackage{graphicx}
+
+\usepackage{amsmath,amsthm,amssymb}
+
+\newcommand{\timegoal}[1]{\note{\textbf{Goal Time: #1}\\\vspace{0.75em}}}
+
+\usepackage{pgfpages}
+\setbeameroption{show notes on second screen}
+
+\usepackage{course,lecture}
+
+\usepackage{hyperref}
+\usepackage[style=authoryear]{biblatex}
+\addbibresource{bibliography.bib}
+
+\mode<presentation>
+
+\title{\thislecture}
+\subtitle{\course}
+\author{Samuel W. Flint}
+\date{\term}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\input{policies/communication.tex}
+\input{policies/attendance.tex}
+\input{policies/group-work.tex}
+\input{policies/submission-standards.tex}
+\input{policies/grade-appeals.tex}
+\input{policies/generative-ai.tex}
+\input{policies/academic-integrity-progressive.tex}
+\input{policies/academic-integrity-harsh.tex}
+\input{policies/attendance-required.tex}
+\input{advice/getting-help.tex}
+\newcommand{\introq}{What is your hometown?}
+\input{activities/introductions.tex}
+\input{activities/stopstartcontinue.tex}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: LaTeX
+%%% TeX-master: t
+%%% End:
