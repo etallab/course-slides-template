@@ -1,0 +1,20 @@
+\documentclass[tikz]{standalone}
+
+\usepackage{course}
+\usepackage[british,cleanlook]{isodate}
+\usepackage[plextt,etbb]{mycommon}
+\begin{document}
+\begin{tikzpicture}[node distance=3cm,
+  every node/.style={draw, circle, very thick},
+  >={Classical TikZ Rightarrow}]
+  \node (a) {a};
+  \node (b) [right=of a] {b};
+
+  \draw[->] (a) to (b);
+\end{tikzpicture}
+\end{document}
+
+%%% Local Variables:
+%%% mode: LaTeX
+%%% TeX-master: t
+%%% End:
