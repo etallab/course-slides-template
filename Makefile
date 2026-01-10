@@ -17,6 +17,9 @@ NOTES_FILES:=$(wildcard **/notes.tex)
 NOTES_PDFS:=$(patsubst %.tex,%.pdf,$(NOTES_FILES))
 BOOKLETS_PDFS:=$(patsubst %/notes.pdf,%/booklet.pdf,$(NOTES_PDFS))
 RESOURCES_ZIPS:=$(patsubst %/resources/,%/resources.zip,$(wildcard **/resources/))
+TIKZ_FIGURES:=$(wildcard tikzfigures/*.tex)
+TIKZ_PDFS:=$(patsubst %.tex,%.pdf,$(TIKZ_FIGURES))
+TIKZ_PNGS:=$(patsubst %.tex,%.png,$(TIKZFIGURES))
 
 # Named files
 NAMED_SLIDES:=$(patsubst %/slides.pdf,slides/%.pdf,$(SLIDES_PDFS))
@@ -30,7 +33,7 @@ NAMED_RESOURCES:=$(patsubst %/resources.zip,resources/%.zip,$(RESOURCES_ZIPS))
 # Top-level targets
 
 .PHONY: all
-all: slides handouts speakers-notes notes booklets resources named
+all: tikzfigs slides handouts speakers-notes notes booklets resources named
 
 .PHONY: print-info
 print-info:
@@ -49,7 +52,7 @@ print-info:
 	@echo - Resource Zips: $(RESOURCES_ZIPS)
 	@echo
 	@echo Available Targets:
-	@echo - all: Build slides, notes, handouts and speaker\'s notes
+	@echo - all: Build standalone figures, slides, notes, handouts and speaker\'s notes
 	@echo - named: Build slides, notes, handouts and speaker\'s notes named after their directories
 	@echo - print-info: Show this message
 	@echo - zip: Build zip files containing artifacts
@@ -66,6 +69,8 @@ print-info:
 	@echo - clean-speakers-notes: Clean speakers-notes-related artifacts \(will clean aux directory\)
 	@echo - resources: Generate resources.zip files for
 	@echo - clean-resources: Clean resources.zip related artifacts.
+	@echo - tikzfigs: Build standalone figures
+	@echo - clean-tikzfigs: Clean TikZ figures
 
 
 # Named File Targets
@@ -174,6 +179,22 @@ clean-named:
 
 # Build Forcing
 .PHONY: FORCE_LATEX
+
+
+# Build Tikz Figures
+.PHONY: tikzfigs
+tikzfigs: $(TIKZ_PDFS) $(TIKZ_PNGS)
+
+tikzfigures/%.pdf: tikzfigures/%.tex FORCE_LATEX
+	$(LATEX_COMMAND) $<
+
+tikzfigures/%.png: tikzfigures/%.pdf
+	magick $< $@
+
+.PHONY: clean-tikzfigs
+clean-tikzfigs:
+	$(RM) $(TIKZ_PDFS) $(TIKZ_PNGS)
+
 
 
 # Build Slides
