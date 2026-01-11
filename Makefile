@@ -17,9 +17,11 @@ NOTES_FILES:=$(wildcard **/notes.tex)
 NOTES_PDFS:=$(patsubst %.tex,%.pdf,$(NOTES_FILES))
 BOOKLETS_PDFS:=$(patsubst %/notes.pdf,%/booklet.pdf,$(NOTES_PDFS))
 RESOURCES_ZIPS:=$(patsubst %/resources/,%/resources.zip,$(wildcard **/resources/))
+
 TIKZ_FIGURES:=$(wildcard tikzfigures/*.tex)
 TIKZ_PDFS:=$(patsubst %.tex,%.pdf,$(TIKZ_FIGURES))
-TIKZ_PNGS:=$(patsubst %.tex,%.png,$(TIKZFIGURES))
+TIKZ_PNGS:=$(patsubst %.tex,%.png,$(TIKZ_FIGURES))
+TIKZFIGS:= $(TIKZ_PDFS) $(TIKZ_PNGS)
 
 # Named files
 NAMED_SLIDES:=$(patsubst %/slides.pdf,slides/%.pdf,$(SLIDES_PDFS))
@@ -182,18 +184,20 @@ clean-named:
 
 
 # Build Tikz Figures
+
+-include tikzfigures/custom.makefile
 .PHONY: tikzfigs
-tikzfigs: $(TIKZ_PDFS) $(TIKZ_PNGS)
+tikzfigs: $(TIKZFIGS)
 
 tikzfigures/%.pdf: tikzfigures/%.tex FORCE_LATEX
 	$(LATEX_COMMAND) $<
 
 tikzfigures/%.png: tikzfigures/%.pdf
-	magick $< $@
+	magick convert $<[0] $@
 
 .PHONY: clean-tikzfigs
 clean-tikzfigs:
-	$(RM) $(TIKZ_PDFS) $(TIKZ_PNGS)
+	$(RM) $(TIKZFIGS)
 
 
 
