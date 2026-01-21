@@ -8,6 +8,12 @@ LATEX_COMMAND := latexmk -cd -auxdir=aux -pdf$(LATEX_ENGINE) $(LATEX_OPTIONS)
 HANDOUT_MARGINS := "15 20 15 20"
 
 
+# Default target
+
+.PHONY: all
+all: tikzfigs slides handouts speakers-notes notes booklets resources named
+
+
 # Automatically detect files to build/build from
 SLIDES_FILES:=$(wildcard **/slides.tex)
 SLIDES_PDFS:=$(patsubst %.tex,%.pdf,$(SLIDES_FILES))
@@ -18,10 +24,11 @@ NOTES_PDFS:=$(patsubst %.tex,%.pdf,$(NOTES_FILES))
 BOOKLETS_PDFS:=$(patsubst %/notes.pdf,%/booklet.pdf,$(NOTES_PDFS))
 RESOURCES_ZIPS:=$(patsubst %/resources/,%/resources.zip,$(wildcard **/resources/))
 
-TIKZ_FIGURES:=$(wildcard tikzfigures/*.tex)
+TIKZ_FIGURES:=$(wildcard tikzfigures/**/*.tex)
 TIKZ_PDFS:=$(patsubst %.tex,%.pdf,$(TIKZ_FIGURES))
 TIKZ_PNGS:=$(patsubst %.tex,%.png,$(TIKZ_FIGURES))
 TIKZFIGS:= $(TIKZ_PDFS) $(TIKZ_PNGS)
+-include tikzfigures/custom.makefile
 
 # Named files
 NAMED_SLIDES:=$(patsubst %/slides.pdf,slides/%.pdf,$(SLIDES_PDFS))
@@ -33,9 +40,6 @@ NAMED_RESOURCES:=$(patsubst %/resources.zip,resources/%.zip,$(RESOURCES_ZIPS))
 
 
 # Top-level targets
-
-.PHONY: all
-all: tikzfigs slides handouts speakers-notes notes booklets resources named
 
 .PHONY: print-info
 print-info:
@@ -51,6 +55,7 @@ print-info:
 	@echo - Speakers Notes: $(SPEAKERS_PDFS)
 	@echo - Notes: $(NOTES_PDFS)
 	@echo - Booklets: $(BOOKLETS_PDFS)
+	@echo - TikZ Figures: $(TIKZFIGS)
 	@echo - Resource Zips: $(RESOURCES_ZIPS)
 	@echo
 	@echo Available Targets:
@@ -185,7 +190,6 @@ clean-named:
 
 # Build Tikz Figures
 
--include tikzfigures/custom.makefile
 .PHONY: tikzfigs
 tikzfigs: $(TIKZFIGS)
 
