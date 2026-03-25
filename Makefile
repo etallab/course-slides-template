@@ -197,7 +197,7 @@ tikzfigures/%.pdf: tikzfigures/%.tex FORCE_LATEX
 	$(LATEX_COMMAND) $<
 
 tikzfigures/%.png: tikzfigures/%.pdf
-	magick convert $<[0] $@
+	magick convert -density 1200 $<[0] $@
 
 .PHONY: clean-tikzfigs
 clean-tikzfigs:
