@@ -1,17 +1,22 @@
-\documentclass[tikz]{standalone}
+\documentclass[beamer,tikz]{standalone}
 
 \usepackage{course}
 \usepackage[british,cleanlook]{isodate}
 \usepackage[plextt,etbb]{mycommon}
 \begin{document}
-\begin{tikzpicture}[node distance=3cm,
-  every node/.style={draw, circle, very thick},
+\begin{standaloneframe}{}{}{}
+  \begin{tikzpicture}[node distance=3cm,
+    every node/.style={draw, circle, very thick},
+    every path/.append style={draw, very thick},
   >={Classical TikZ Rightarrow}]
   \node (a) {a};
   \node (b) [right=of a] {b};
+  \node (c) [right=of b,visible on=<2>] {c};
 
-  \draw[->] (a) to (b);
+  \path[->] (a) -- (b);
+  \path[->,visible on=<2>] (b) to (c);
 \end{tikzpicture}
+\end{standaloneframe}
 \end{document}
 
 %%% Local Variables:
