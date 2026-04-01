@@ -7,14 +7,13 @@
 \begin{standaloneframe}{}{}{}
   \begin{tikzpicture}[node distance=3cm,
     every node/.style={draw, circle, very thick},
-    every path/.append style={draw, very thick},
-  >={Classical TikZ Rightarrow}]
+    every edge/.append style={draw, very thick}]
   \node (a) {a};
   \node (b) [right=of a] {b};
   \node (c) [right=of b,visible on=<2>] {c};
 
-  \path[->] (a) -- (b);
-  \path[->,visible on=<2>] (b) to (c);
+  \path[->] (a) edge["\(\sqrt{2}\)"'] (b);
+  \path[->,visible on=<2>] (b) edge["7"] (c);
 \end{tikzpicture}
 \end{standaloneframe}
 \end{document}
