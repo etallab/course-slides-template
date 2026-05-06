@@ -1,6 +1,6 @@
 # TeX-ing Options
 LATEX_OPTIONS := -interaction=nonstopmode -file-line-error
-LATEX_ENGINE :=
+LATEX_ENGINE := lua
 LATEX_COMMAND := latexmk -cd -auxdir=aux -pdf$(LATEX_ENGINE) $(LATEX_OPTIONS)
 
 
