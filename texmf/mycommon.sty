@@ -1,4 +1,4 @@
-\ProvidesPackage{mycommon}[2025/02/12 Common/Personal Utility
+\ProvidesPackage{mycommon}[2026/05/06 Common/Personal Utility
 Commands]
 
 \RequirePackage{filehook}
@@ -113,7 +113,6 @@ Commands]
       Numbers=OldStyle,
       RawFeature={+ss01}
       ]{LucidaSansOT}
-      \RequirePackage{unicode-math}
       \setmathfont{LucidaBrightMathOT.otf}
       \setmathfont[version=bold]{LucidaBrightMathOT-Demi.otf}
     \else
@@ -138,7 +137,7 @@ Commands]
     \@ifpackageloaded{unicode-math}{%
         \setmathfont[Scale=MatchUppercase]{libertinusmath-regular.otf}%
       }{%
-        \RequirePackage[libertine,vvarbb]{newtxmath}%
+        \RequirePackage[libertine,vvarbb]{newtxmath}% 
       }
   \else
     \ifluatex
@@ -149,19 +148,16 @@ Commands]
           ItalicFont     = *-Italic ,
           BoldFont       = *-Bold , 
           BoldItalicFont = *-Bold Italic ]
-        {Cabin}[Scale=0.95,Ligatures=TeX]
-      \@ifpackageloaded{unicode-math}{%
-        \setmathfont[Scale=MatchUppercase]{libertinusmath-regular.otf}%
-      }{%
-        \RequirePackage[libertine,vvarbb]{newtxmath}%
-      }
+          {Cabin}[Scale=0.95,Ligatures=TeX]
+       \RequirePackage{lua-unicode-math}
+       \setmathfont[Scale=MatchUppercase]{libertinusmath-regular.otf}% 
     \else
       \RequirePackage[p,osf]{ETbb}
       \RequirePackage[sfdefault,scaled=.95,type1]{cabin}
       \@ifpackageloaded{unicode-math}{%
         \setmathfont[Scale=MatchUppercase]{libertinusmath-regular.otf}%
       }{%
-        \RequirePackage[libertine,vvarbb]{newtxmath}%
+        \RequirePackage[libertine,vvarbb]{newtxmath} % 
       }
       \RequirePackage[T1]{fontenc}
     \fi
@@ -200,8 +196,11 @@ Commands]
 \definecolor{oxfordblue}{RGB}{0,33,71}
 \definecolor{royalblue}{RGB}{65,105,225}
 \definecolor{huskerred}{RGB}{208,0,0}
+
 \definecolor{dsublue}{RGB}{0,65,101}
 \definecolor{trojanblue}{RGB}{0,169,224}
+\definecolor{dsulightgray}{RGB}{173,175,175}
+\definecolor{dsudbarkgray}{RGB}{77,79,83}
 
 % Colorblind-Friendly Colors (from Seaborn's "colorblind" palette)
 \definecolor{seaborncolorblind1}{RGB}{1,115,178}
