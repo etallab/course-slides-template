@@ -30,10 +30,31 @@
   \pagestyle{scrheadings}
 }
 
-% \colorlet{rowhighlight}{lightgray}
-% \AtEndOfClassFile*{beamer}{
-%   \colorlet{rowhighlight}{mLightGreen!55!white}
-% }
+\definecolor{dsublue}{RGB}{0,65,101}
+\definecolor{trojanblue}{RGB}{0,169,224}
+\definecolor{dsulightgray}{RGB}{173,175,175}
+\definecolor{dsudbarkgray}{RGB}{77,79,83}
+
+\AtEndOfClassFile*{ltx-talk}{
+  \RequirePackage[
+  themecolor=trojanblue,
+  titlegraphic=none,
+  sectiongraphic=none,
+  ]{talkthemespectrum}
+  \EditInstance{footer}{std}{
+    background-color = trojanblue,
+    color=white,
+    element-order = {date, author, title, framenumber, totalframes}
+  }
+  \institute[Beacom CS]{Beacom College of Computer and Cyber Sciences\\Dakota State University}
+  \author[S. Flint]{Samuel W. Flint, Ph.D.}
+  \date{\term}
+  \subtitle{\course}
+  % TODO: Side Notes
+  % TODO: Fix fonts
+  % \usetheme[sectionpage=none,progressbar=foot,block=fill,standoutnumbering=hide]{moloch}
+  % \usetheme{moloch}
+}
 
 \AtEndOfPackageFile*{listings}{
   \lstdefinestyle{default}{

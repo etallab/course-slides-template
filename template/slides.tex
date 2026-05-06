@@ -1,10 +1,8 @@
-\documentclass[aspectratio=169]{beamer}
-
-\usetheme[sectionpage=none,progressbar=foot,block=fill,standoutnumbering=hide]{moloch}
-\setbeamertemplate{page number in head/foot}[totalframenumber]
+\DocumentMetadata{tagging=on}
+\documentclass[aspectratio=169]{ltx-talk}
 
 \usepackage[british,cleanlook]{isodate}
-\usepackage[plextt,etbb]{mycommon}
+\usepackage{mycommon}
 \usepackage{csquotes}
 \usepackage{booktabs,tabularx}
 \usepackage{pifont}
@@ -13,11 +11,6 @@
 \usepackage[subpreambles=false,mode=tex]{standalone}
 
 \usepackage{amsmath,amsthm,amssymb}
-
-\newcommand{\timegoal}[1]{\note{\textbf{Goal Time: #1}\\\vspace{0.75em}}}
-
-\usepackage{pgfpages}
-\setbeameroption{show notes on second screen}
 
 \usepackage{course,lecture}
 
@@ -29,15 +22,10 @@
 \mode<presentation>
 
 \title{\thislecture}
-\subtitle{\course}
-\author{Samuel W. Flint}
-\date{\term}
 
 \begin{document}
 
-\begin{frame}
-  \titlepage
-\end{frame}
+\maketitle
 
 \begin{frame}
   \frametitle{Learning Objectives for This Lecture}
