@@ -58,26 +58,14 @@
   % \usetheme{moloch}
 }
 
-\AtEndOfPackageFile*{listings}{
-  \lstdefinestyle{default}{
-    basicstyle=\ttfamily,
-    breaklines=true,
-    prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
-    tabsize=4,
-    numbers=left,
-    numberstyle=\tiny
-  }
-  \lstset{
-    escapeinside={(*@}{@*)},
-    style=default
-  }
+\RequirePackage{minted}
+\setminted{
+  style=algol_nu,
+  breaklines=true,
+  breakaftersymbolpre={\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}}},
+  numbers=left
 }
-
-\AtEndOfClassFile*{beamer}{
-  \AtEndOfPackageFile*{listings}{
-    \lstset{captionpos=b}
-  }
-}
+\renewcommand\theFancyVerbLine{\scriptsize\arabic{FancyVerbLine}}
 
 \AtEndOfPackageFile*{enumitem}{
   \newlist{objectives}{enumerate}{1}
