@@ -8,6 +8,11 @@ LATEX_COMMAND := latexmk -cd -auxdir=aux -pdf$(LATEX_ENGINE) $(LATEX_OPTIONS)
 HANDOUT_MARGINS := "15 20 15 20"
 
 
+# Conversion Configuration
+PNG_DENSITY := 1200
+ANIMATION_DELAY := 70
+
+
 # Default target
 
 .PHONY: all
@@ -197,7 +202,7 @@ tikzfigures/%.pdf: tikzfigures/%.tex FORCE_LATEX
 	$(LATEX_COMMAND) $<
 
 tikzfigures/%.png: tikzfigures/%.pdf
-	magick convert -density 1200 $<[0] $@
+	magick convert -density $(PNG_DENSITY) $<[0] $@
 
 .PHONY: clean-tikzfigs
 clean-tikzfigs:
