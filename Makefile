@@ -15,7 +15,7 @@ all: tikzfigs slides handouts speakers-notes notes booklets resources named
 
 
 # Automatically detect files to build/build from
-SLIDES_FILES:=$(wildcard **/slides.tex) $(wildcard tikzfigures/*.tex)
+SLIDES_FILES:=$(wildcard **/slides.tex)
 SLIDES_PDFS:=$(patsubst %.tex,%.pdf,$(SLIDES_FILES))
 HANDOUTS_PDFS:=$(patsubst %/slides.tex,%/handout.pdf,$(SLIDES_FILES))
 SPEAKERS_PDFS:=$(patsubst %/slides.tex,%/speakers-notes.pdf,$(SLIDES_FILES))
@@ -24,7 +24,7 @@ NOTES_PDFS:=$(patsubst %.tex,%.pdf,$(NOTES_FILES))
 BOOKLETS_PDFS:=$(patsubst %/notes.pdf,%/booklet.pdf,$(NOTES_PDFS))
 RESOURCES_ZIPS:=$(patsubst %/resources/,%/resources.zip,$(wildcard **/resources/))
 
-TIKZ_FIGURES:=$(wildcard tikzfigures/**/*.tex)
+TIKZ_FIGURES:=$(wildcard tikzfigures/**/*.tex) $(wildcard tikzfigures/*.tex)
 TIKZ_PDFS:=$(patsubst %.tex,%.pdf,$(TIKZ_FIGURES))
 TIKZ_PNGS:=$(patsubst %.tex,%.png,$(TIKZ_FIGURES))
 TIKZFIGS:= $(TIKZ_PDFS) $(TIKZ_PNGS)
