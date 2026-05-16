@@ -271,11 +271,8 @@ handouts: $(HANDOUTS_PDFS)
 %/cropped.pdf: %/handout-temp.pdf
 	pdfcrop --margins $(HANDOUT_MARGINS) $< $@
 
-%/handout-temp.ltx: %/slides.tex
-	sed -e 's/\\documentclass\[/\\documentclass[handout,notes,/g' -e 's/\\documentclass{/\\documentclass[handout,notes]{/g' $< > $@
-
-%/handout-temp.pdf: %/handout-temp.ltx
-	$(LATEX_COMMAND) $<
+%/handout-temp.pdf: %/slides.tex
+	$(LATEX_COMMAND) -jobname=handout-temp -usepretex='\PassOptionsToClass{handout}{ltx-talk}' $<
 	@$(RM) $(basename @).synctex.gz
 
 
@@ -290,9 +287,6 @@ speakers-notes: $(SPEAKERS_PDFS)
 %/speakers-notes-cropped.pdf: %/speakers-notes-temp.pdf
 	pdfcrop --margins $(HANDOUT_MARGINS) $< $@
 
-%/speakers-notes-temp.ltx: %/slides.tex
-	sed -e 's/\\documentclass\[/\\documentclass[notes,/g' -e 's/\\documentclass{/\\documentclass[notes]{/g' $< > $(basename $@).ltx
-
-%/speakers-notes-temp.pdf: %/speakers-notes-temp.ltx
-	$(LATEX_COMMAND) $<
+%/speakers-notes-temp.pdf: %/slides.tex
+	$(LATEX_COMMAND) -jobname=speakers-notes-temp -usepretex='\PassOptionsToClass{handout}{ltx-talk}'  $<
 	@$(RM) $(basename @).synctex.gz
