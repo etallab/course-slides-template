@@ -266,7 +266,7 @@ resources: $(RESOURCE_ZIPS)
 handouts: $(HANDOUTS_PDFS)
 
 %/handout.pdf: %/cropped.pdf
-	pdfjam --nup 1x2 $< --letterpaper --landscape --outfile $@
+	pdfjam --nup 1x2 $< --letterpaper --outfile $@
 
 %/cropped.pdf: %/handout-temp.pdf
 	pdfcrop --margins $(HANDOUT_MARGINS) $< $@
