@@ -133,13 +133,13 @@ resources/%.zip: %/resources.zip
 zip: notes.zip all.zip named.zip
 
 notes.zip: $(HANDOUTS_PDFS) $(NOTES_PDFS)
-	zip -ur $@ $^
+	7z u $@ $^
 
 all.zip: $(SLIDES_PDFS) $(HANDOUTS_PDFS) $(SPEAKERS_PDFS) $(NOTES_PDFS)
-	zip -ur $@ $^
+	7z u $@ $^
 
 named.zip: $(NAMED_SLIDES) $(NAMED_HANDOUTS) $(NAMED_SPEAKERS) $(NAMED_NOTES)
-	zip -ur $@ $^
+	7z u $@ $^
 
 
 # Clean Up
@@ -182,7 +182,8 @@ clean-booklets:
 	$(RM) $(BOOKLETS_PDFS)
 
 .PHONY: clean-resources
-	$(RM) $(RESOURCES_ZIPS)
+clean-resources:
+	$(RM) -r $(RESOURCES_ZIPS) resources/
 
 .PHONY: clean-named
 clean-named:
@@ -265,12 +266,14 @@ resources: $(RESOURCE_ZIPS)
 .PHONY: handouts
 handouts: $(HANDOUTS_PDFS)
 
-%/handout.pdf: %/cropped.pdf
+%/handout.pdf: %/handout-cropped.pdf
 	pdfjam --nup 1x2 $< --letterpaper --outfile $@
 
-%/cropped.pdf: %/handout-temp.pdf
+.INTERMEDIATE: %/handout-cropped.pdf
+%/handout-cropped.pdf: %/handout-temp.pdf
 	pdfcrop --margins $(HANDOUT_MARGINS) $< $@
 
+.INTERMEDIATE: %/handout-temp.pdf
 %/handout-temp.pdf: %/slides.tex
 	$(LATEX_COMMAND) -jobname=handout-temp -usepretex='\PassOptionsToClass{handout}{ltx-talk}' $<
 	@$(RM) $(basename @).synctex.gz
@@ -284,9 +287,11 @@ speakers-notes: $(SPEAKERS_PDFS)
 %/speakers-notes.pdf: %/speakers-notes-cropped.pdf
 	pdfjam --nup 1x2 $< --letterpaper --landscape --outfile $@
 
+.INTERMEDIATE: %/speakers-notes-cropped.pdf
 %/speakers-notes-cropped.pdf: %/speakers-notes-temp.pdf
 	pdfcrop --margins $(HANDOUT_MARGINS) $< $@
 
+.INTERMEDIATE: %/speakers-notes-temp.pdf
 %/speakers-notes-temp.pdf: %/slides.tex
 	$(LATEX_COMMAND) -jobname=speakers-notes-temp -usepretex='\PassOptionsToClass{handout}{ltx-talk}'  $<
 	@$(RM) $(basename @).synctex.gz
