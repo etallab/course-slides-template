@@ -23,6 +23,7 @@ all: tikzfigs slides handouts speakers-notes notes booklets resources named
 SLIDES_FILES:=$(wildcard **/slides.tex)
 SLIDES_PDFS:=$(patsubst %.tex,%.pdf,$(SLIDES_FILES))
 HANDOUTS_PDFS:=$(patsubst %/slides.tex,%/handout.pdf,$(SLIDES_FILES))
+SQUASHED_PDFS:=$(patsubst %/slides.tex,%/squashed.pdf,$(SLIDES_FILES))
 SPEAKERS_PDFS:=$(patsubst %/slides.tex,%/speakers-notes.pdf,$(SLIDES_FILES))
 NOTES_FILES:=$(wildcard **/notes.tex)
 NOTES_PDFS:=$(patsubst %.tex,%.pdf,$(NOTES_FILES))
@@ -38,6 +39,7 @@ TIKZFIGS:= $(TIKZ_PDFS) $(TIKZ_PNGS)
 # Named files
 NAMED_SLIDES:=$(patsubst %/slides.pdf,slides/%.pdf,$(SLIDES_PDFS))
 NAMED_HANDOUTS:=$(patsubst %/handout.pdf,handouts/%.pdf,$(HANDOUTS_PDFS))
+NAMED_SQUASHED:=$(patsubst %/squashed.pdf,squashed/%.pdf,$(SQUASHED_PDFS))
 NAMED_SPEAKERS:=$(patsubst %/speakers-notes.pdf,speakers-notes/%.pdf,$(SPEAKERS_PDFS))
 NAMED_NOTES:=$(patsubst %/notes.pdf,notes/%.pdf,$(NOTES_PDFS))
 NAMED_BOOKLETS:=$(patsubst %/booklet.pdf,booklets/%.pdf,$(BOOKLETS_PDFS))
@@ -75,6 +77,8 @@ print-info:
 	@echo - clean-notes: Clean notes-related artifacts \(will clean aux directory\)
 	@echo - booklets: Build Notes Booklets \(named-booklets\)
 	@echo - clean-booklets: Clean booklets-related artifacts
+	@echo - squashed: Build single-slide version of slides \(named-squashed\)
+	@echo - clean-squashed: Clean squashed-related artifacts \(will clean aux directory\)
 	@echo - handouts: Build handouts \(named-handouts\)
 	@echo - clean-handouts: Clean handout-related artifacts \(will clean aux directory\)
 	@echo - speakers-notes: Build speaker\'s notes \(handout-style PDFs without handout mode set\) \(named-speakers-notes\)
@@ -88,12 +92,18 @@ print-info:
 # Named File Targets
 
 .PHONY: named
-named: named-slides named-handouts named-speakers-notes named-notes named-booklets named-resources
+named: named-slides named-squashed named-handouts named-speakers-notes named-notes named-booklets named-resources
 
 .PHONY: named-slides
 named-slides: $(NAMED_SLIDES)
 slides/%.pdf: %/slides.pdf
 	@mkdir -p slides
+	cp $^ $@
+
+.PHONY: named-squashed
+named-squashed: $(NAMED_SQUASHED)
+squashed/%.pdf: %/squashed.pdf
+	@mkdir -p squashed
 	cp $^ $@
 
 .PHONY: named-handouts
@@ -132,13 +142,13 @@ resources/%.zip: %/resources.zip
 .PHONY: zip
 zip: notes.zip all.zip named.zip
 
-notes.zip: $(HANDOUTS_PDFS) $(NOTES_PDFS)
+notes.zip: $(SQUASHED_PDFS) $(HANDOUTS_PDFS) $(NOTES_PDFS)
 	7z u $@ $^
 
-all.zip: $(SLIDES_PDFS) $(HANDOUTS_PDFS) $(SPEAKERS_PDFS) $(NOTES_PDFS)
+all.zip: $(SLIDES_PDFS) $(SQUASHED_PDFS) $(HANDOUTS_PDFS) $(SPEAKERS_PDFS) $(NOTES_PDFS)
 	7z u $@ $^
 
-named.zip: $(NAMED_SLIDES) $(NAMED_HANDOUTS) $(NAMED_SPEAKERS) $(NAMED_NOTES)
+named.zip: $(NAMED_SLIDES) $(NAMED_SQUASHED) $(NAMED_HANDOUTS) $(NAMED_SPEAKERS) $(NAMED_NOTES)
 	7z u $@ $^
 
 
@@ -150,6 +160,7 @@ clean:
 	$(RM) -r $(dir $(wildcard **/aux/*))
 	$(RM) -r $(wildcard **/*.synctex.gz)
 	$(RM) $(SLIDES_PDFS)
+	$(RM) $(SQUASHED_PDFS)
 	$(RM) $(HANDOUTS_PDFS)
 	$(RM) $(SPEAKERS_PDFS)
 	$(RM) $(NOTES_PDFS) $(wildcard **/slide-images.pdf)
@@ -160,6 +171,11 @@ clean:
 .PHONY: clean-slides
 clean-slides:
 	$(RM) $(SLIDES_PDFS)
+	$(RM) -r $(wildcard **/*.synctex.gz)
+
+.PHONY: clean-squashed
+clean-squashed:
+	$(RM) $(SQUASHED_PDFS)
 	$(RM) -r $(wildcard **/*.synctex.gz)
 
 .PHONY: clean-handouts
@@ -187,7 +203,7 @@ clean-resources:
 
 .PHONY: clean-named
 clean-named:
-	$(RM) -r notes speakers-notes handouts slides booklets resources
+	$(RM) -r notes speakers-notes handouts squashed slides booklets resources
 
 
 # Build Forcing
@@ -263,6 +279,13 @@ resources: $(RESOURCE_ZIPS)
 
 # Build Handouts
 
+.PHONY: squashed
+squashed: $(SQUASHED_PDFS)
+
+%/squashed.pdf: %/slides.tex
+	$(LATEX_COMMAND) -jobname=squashed -usepretex='\PassOptionsToClass{mode=handout}{ltx-talk}' $<
+	@$(RM) $(basename @).synctex.gz
+
 .PHONY: handouts
 handouts: $(HANDOUTS_PDFS)
 
@@ -270,12 +293,12 @@ handouts: $(HANDOUTS_PDFS)
 	pdfjam --nup 1x2 $< --letterpaper --outfile $@
 
 .INTERMEDIATE: %/handout-cropped.pdf
-%/handout-cropped.pdf: %/handout-temp.pdf
+%/handout-cropped.pdf: %/squashed.pdf
 	pdfcrop --margins $(HANDOUT_MARGINS) $< $@
 
 .INTERMEDIATE: %/handout-temp.pdf
 %/handout-temp.pdf: %/slides.tex
-	$(LATEX_COMMAND) -jobname=handout-temp -usepretex='\PassOptionsToClass{handout}{ltx-talk}' $<
+	$(LATEX_COMMAND) -jobname=handout-temp -usepretex='\PassOptionsToClass{mode=handout}{ltx-talk}' $<
 	@$(RM) $(basename @).synctex.gz
 
 
