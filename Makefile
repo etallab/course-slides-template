@@ -16,7 +16,7 @@ ANIMATION_DELAY := 70
 # Default target
 
 .PHONY: all
-all: tikzfigs slides handouts speakers-notes notes booklets resources named
+all: tikzfigs mml_files slides handouts speakers-notes notes booklets resources named
 
 
 # Automatically detect files to build/build from
@@ -29,6 +29,9 @@ NOTES_FILES:=$(wildcard **/notes.tex)
 NOTES_PDFS:=$(patsubst %.tex,%.pdf,$(NOTES_FILES))
 BOOKLETS_PDFS:=$(patsubst %/notes.pdf,%/booklet.pdf,$(NOTES_PDFS))
 RESOURCES_ZIPS:=$(patsubst %/resources/,%/resources.zip,$(wildcard **/resources/))
+
+EQUATIONS:=$(wildcard **/*.eqn.tex)
+MML_FILES:=$(patsubst %.eqn.tex,%.mml,$(EQUATIONS))
 
 TIKZ_FIGURES:=$(wildcard tikzfigures/**/*.tex) $(wildcard tikzfigures/*.tex)
 TIKZ_PDFS:=$(patsubst %.tex,%.pdf,$(TIKZ_FIGURES))
@@ -58,6 +61,7 @@ print-info:
 	@echo
 	@echo Target Files:
 	@echo - Slides: $(SLIDES_PDFS)
+	@echo - MathML Files: $(MML_FILES)
 	@echo - Handouts: $(HANDOUTS_PDFS)
 	@echo - Speakers Notes: $(SPEAKERS_PDFS)
 	@echo - Notes: $(NOTES_PDFS)
@@ -72,6 +76,8 @@ print-info:
 	@echo - zip: Build zip files containing artifacts
 	@echo - clean: Clean all artifacts \(clean-name\)
 	@echo - slides: Build slide decks \(named-slides\)
+	@echo - mml_files: Build MML files from .eqn.tex files
+	@echo - clean-mml: Clean generated MML files
 	@echo - clean-slides: Clean slide-related artifacts \(will clean aux directory\)
 	@echo - notes: Build written notes \(named-notes\)
 	@echo - clean-notes: Clean notes-related artifacts \(will clean aux directory\)
@@ -166,6 +172,7 @@ clean:
 	$(RM) $(NOTES_PDFS) $(wildcard **/slide-images.pdf)
 	$(RM) $(BOOKLETS_PDFS)
 	$(RM) $(RESOURCES_ZIPS)
+	$(RM) $(MML_FILES)
 	$(RM) -r notes speakers-notes handouts slides booklets resources
 
 .PHONY: clean-slides
@@ -200,6 +207,10 @@ clean-booklets:
 .PHONY: clean-resources
 clean-resources:
 	$(RM) -r $(RESOURCES_ZIPS) resources/
+
+.PHONY: clean-mml
+clean-mml:
+	$(RM) $(MML_FILES)
 
 .PHONY: clean-named
 clean-named:
@@ -318,3 +329,11 @@ speakers-notes: $(SPEAKERS_PDFS)
 %/speakers-notes-temp.pdf: %/slides.tex
 	$(LATEX_COMMAND) -jobname=speakers-notes-temp -usepretex='\PassOptionsToClass{handout}{ltx-talk}'  $<
 	@$(RM) $(basename @).synctex.gz
+
+
+# MathML Conversion
+.PHONY: mml_files
+mml_files: $(MML_FILES)
+
+%.mml: %.eqn.tex
+	latex2mathml -b -f $< | xmllint --format - > $@
