@@ -247,6 +247,16 @@ slides: $(SLIDES_PDFS)
 	$(LATEX_COMMAND) $<
 
 
+# Build Assignment Documents
+
+# TODO: Improve & handle coding assignments
+assignments/%/assignment.pdf: assignments/%/assignment.tex FORCE_LATEX
+	$(LATEX_COMMAND) $<
+
+assignments/%/solution.pdf: assignments/%/assignment.tex FORCE_LATEX
+	$(LATEX_COMMAND) -jobname=solution -usepretex='\PassOptionsToPackage{solution}{tagging}' $<
+
+
 # Build Notes
 
 .PHONY: notes
