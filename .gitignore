@@ -43,7 +43,7 @@ tramp
 
 # AUCTeX auto folder
 /auto/
-*/auto/
+**/auto/
 
 # cask packages
 .cask/
