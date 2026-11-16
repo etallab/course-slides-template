@@ -1,4 +1,4 @@
-\ProvidesPackage{mycommon}[2026/05/06 Common/Personal Utility
+\ProvidesPackage{mycommon}[2026/11/16 Common/Personal Utility
 Commands]
 
 \RequirePackage{filehook}
@@ -151,7 +151,7 @@ Commands]
        \setmathfont[Scale=MatchUppercase]{libertinusmath-regular.otf}% 
     \else
       \RequirePackage[p,osf]{ETbb}
-      \RequirePackage[sfdefault,scaled=.95,type1]{cabin}
+      \RequirePackage[scaled=.95,type1]{cabin}
       \@ifpackageloaded{unicode-math}{%
         \setmathfont[Scale=MatchUppercase]{libertinusmath-regular.otf}%
       }{%
@@ -164,10 +164,22 @@ Commands]
 
 \if@common@plextt
   \ifxetex
-    \RequirePackage[usefilenames,mono=true,sans=false,serif=false,TT={Scale=MatchLowercase,StylisticSet=3}]{plex-otf}
+    \RequirePackage{fontspec}
+    \setmonofont
+    [ UprightFont    = *-Regular ,
+      ItalicFont     = *-Italic ,
+      BoldFont       = *-Bold , 
+      BoldItalicFont = *-BoldItalic ]
+    {IBMPlexMono}[Scale=MatchLowercase,StylisticSet=3]
   \else
     \ifluatex
-      \RequirePackage[mono=true,sans=false,serif=false,TT={Scale=MatchLowercase,StylisticSet=3}]{plex-otf}
+      \RequirePackage{fontspec}
+      \setmonofont
+      [ UprightFont    = *-Regular ,
+        ItalicFont     = *-Italic ,
+        BoldFont       = *-Bold , 
+        BoldItalicFont = *-BoldItalic ]
+        {IBMPlexMono}[Scale=MatchLowercase,StylisticSet=3]
     \else
       \RequirePackage[T1]{fontenc}
       \RequirePackage[text,sb,type1]{plex-mono}
@@ -314,9 +326,9 @@ Commands]
   \fi
   \renewcommand\blind[2]{\anon[#2]{#1}}
   \RenewEnviron{blinded}{
-    \begin{anonsupress}
+    \begin{anonsuppress}
       \BODY
-    \end{anonsupress}
+    \end{anonsuppress}
   }
 }
 
